@@ -8,10 +8,10 @@ Window {
     height: 480
     title: qsTr("Hello World")
 
+    Component.onCompleted: gameController.newGame()
+
     Rectangle {
         anchors.fill: parent
-
-        color: "gray"
 
         gradient: Gradient {
             GradientStop { position: 0.0; color: "brown" }
@@ -43,16 +43,48 @@ Window {
 
             size: 8
 
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    pieces.selectedX = -1
+                    pieces.selectedY = -1
+                    gameController.clearDestinations();
+                }
+            }
+
             Pieces {
+                id: pieces
+
                 anchors.fill: parent
 
                 size: parent.size
+
+                onPieceClicked: {
+                    selectedX = x
+                    selectedY = y
+
+                    gameController.showDestinations(x, y)
+                }
             }
 
             Highlights {
                 anchors.fill: parent
 
                 size: parent.size
+
+                onDestinationClicked: {
+                    const fromX = pieces.selectedX
+                    const fromY = pieces.selectedY
+
+                    if(fromX >= 0 && fromY >= 0) {
+                        gameController.doMove(fromX, fromY, x, y)
+
+                        pieces.selectedX = -1
+                        pieces.selectedY = -1
+                    }
+
+                    gameController.clearDestinations();
+                }
             }
         }
     }
@@ -62,5 +94,14 @@ Window {
 
         width: 0.66 * parent.width
         height: parent.height
+
+        Button {
+            text: "New Game"
+            onClicked: {
+                gameController.newGame()
+
+                drawer.close()
+            }
+        }
     }
 }

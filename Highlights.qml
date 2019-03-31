@@ -5,38 +5,29 @@ Item {
 
     property int size: 8
 
-    ListModel {
-        id: highlightsModel
-
-        ListElement {
-            row: 0
-            column: 0
-        }
-        ListElement {
-            row: 0
-            column: 2
-        }
-        ListElement {
-            row: 3
-            column: 3
-        }
-    }
+    signal destinationClicked(int x, int y)
+    signal selectedClicked
 
     Repeater {
-        id: highlightsRepeater
-
-        model: highlightsModel
+        model: highlightsModel.destinations
 
         delegate: Item {
-            x: model.column * width
-            y: model.row * height
+
             height: root.height / root.size
             width: root.width / root.size
+            x: modelData.x * width
+            y: modelData.y * height
 
             Rectangle {
                 anchors.fill: parent
                 color: "green"
                 opacity: 0.5
+            }
+
+            MouseArea {
+                anchors.fill: parent
+
+                onClicked: root.destinationClicked(modelData.x, modelData.y)
             }
         }
     }

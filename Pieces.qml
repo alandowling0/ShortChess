@@ -4,34 +4,16 @@ Item {
     id: root
 
     property int size: 8
+    property int selectedX: -1
+    property int selectedY: -1
 
-    ListModel {
-        id: pieceModel
+    signal pieceClicked(int x, int y)
 
-        ListElement {
-            color: "white"
-            type: "pawn"
-            row:  2
-            column: 0
-        }
-        ListElement {
-            color: "white"
-            type: "rook"
-            row: 0
-            column:  1
-        }
-        ListElement {
-            color: "black"
-            type: "pawn"
-            row: 1
-            column: 3
-        }
-    }
 
     Repeater {
         id: piecesRepeater
 
-        model: pieceModel
+        model: piecesModel
 
         function pieceImagePath(type, color) {
             let path = "images/"
@@ -70,22 +52,26 @@ Item {
         delegate: Item {
             id: piece
 
-            property bool isMoving: false
+            property real modelX: model.x
+            property real modelY: model.y
+            property bool selected: (model.x === root.selectedX) && (model.y === root.selectedY)
 
-            Behavior on x {
-                enabled: piece.isMoving
+            opacity: selected ? 0.5 : 1.0
 
-                NumberAnimation {}
+            Behavior on modelX {
+                NumberAnimation {
+                    easing.type: Easing.InOutQuad
+                }
             }
 
-            Behavior on y {
-                enabled: piece.isMoving
-
-                NumberAnimation {}
+            Behavior on modelY {
+                NumberAnimation {
+                    easing.type: Easing.InOutQuad
+                }
             }
 
-            x: model.column * width
-            y: model.row * height
+            x: modelX * width
+            y: modelY * height
             height: root.height / root.size
             width: root.width / root.size
 
@@ -96,14 +82,8 @@ Item {
 
             MouseArea {
                 anchors.fill: parent
-                onClicked: {
-                    piece.isMoving = true
-                    model.column = Math.floor(Math.random() * root.size)
-                    model.row = Math.floor(Math.random() * root.size)
-                    piece.isMoving = false
-                }
+                onClicked: root.pieceClicked(modelX, modelY)
             }
         }
     }
-
 }
