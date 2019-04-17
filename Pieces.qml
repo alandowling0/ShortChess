@@ -6,6 +6,7 @@ Item {
     property int size: 8
     property int selectedX: -1
     property int selectedY: -1
+    property bool rotateBoard: false
 
     signal pieceClicked(int x, int y)
 
@@ -78,6 +79,7 @@ Item {
             Image {
                 anchors.fill: parent
                 source: piecesRepeater.pieceImagePath(model.type, model.color)
+                rotation: root.rotateBoard ? 180 : 0
             }
 
             MouseArea {

@@ -4,6 +4,7 @@
 #include "piecesmodel.h"
 #include "highlightsmodel.h"
 #include "gamecontroller.h"
+#include "game.h"
 
 int main(int argc, char *argv[])
 {
@@ -11,9 +12,10 @@ int main(int argc, char *argv[])
 
     QGuiApplication app(argc, argv);
 
-    auto piecesModel = new PiecesModel();
+    auto game = new Game();
+    auto piecesModel = new PiecesModel(*game);
     auto highlightsModel = new HighlightsModel();
-    auto gameController = new GameController(*piecesModel, *highlightsModel);
+    auto gameController = new GameController(*game, *highlightsModel);
 
     QQmlApplicationEngine engine;
 

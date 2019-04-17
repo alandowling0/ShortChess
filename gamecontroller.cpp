@@ -1,28 +1,27 @@
 #include "gamecontroller.h"
 #include <QPair>
 
-GameController::GameController(PiecesModel& piecesModel, HighlightsModel& highlightsModel) :
-    mPiecesModel(piecesModel), mHighlightsModel(highlightsModel)
+GameController::GameController(Game& game, HighlightsModel& highlightsModel) :
+    mGame(game), mHighlightsModel(highlightsModel)
 {
-
 }
 
 void GameController::newGame()
 {
-    mPiecesModel.reset();
+    mGame.newGame();
     mHighlightsModel.clear();
 }
 
 void GameController::showDestinations(int x, int y)
 {
-    mHighlightsModel.setDestinations({
-        {rand() % 8, rand() % 8},
-        {rand() % 8, rand() % 8},
-        {rand() % 8, rand() % 8},
-        {rand() % 8, rand() % 8},
-        {rand() % 8, rand() % 8},
-        {rand() % 8, rand() % 8}
-    });
+    QSet<QPair<int, int>> destinations;
+
+    for(auto const& m : mGame.getLegalMoves(x, y))
+    {
+        destinations.insert({m.mDestinationX, m.mDestinationY});
+    }
+
+    mHighlightsModel.setDestinations(destinations);
 }
 
 void GameController::clearDestinations()
@@ -32,6 +31,6 @@ void GameController::clearDestinations()
 
 void GameController::doMove(int fromX, int fromY, int toX, int toY)
 {
-    mPiecesModel.doMove(fromX, fromY, toX, toY);
+    mGame.playMove(Move(fromX, fromY, toX, toY));
 }
 

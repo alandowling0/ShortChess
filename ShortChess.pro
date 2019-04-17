@@ -16,7 +16,8 @@ SOURCES += \
         main.cpp \
     piecesmodel.cpp \
     gamecontroller.cpp \
-    highlightsmodel.cpp
+    highlightsmodel.cpp \
+    game.cpp
 
 RESOURCES += qml.qrc
 
@@ -34,4 +35,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     piecesmodel.h \
     gamecontroller.h \
-    highlightsmodel.h
+    highlightsmodel.h \
+    game.h

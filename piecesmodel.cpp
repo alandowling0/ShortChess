@@ -3,70 +3,14 @@
 #include <QTimer>
 
 
-PiecesModel::PiecesModel()
+PiecesModel::PiecesModel(Game& game):
+    mGame(game)
 {
-}
+    connect(&mGame, &Game::alan, this, &PiecesModel::onAlan);
+    connect(&mGame, &Game::pieceMoved, this, &PiecesModel::onPieceMoved);
+    connect(&mGame, &Game::pieceAdded, this, &PiecesModel::onPieceAdded);
+    connect(&mGame, &Game::pieceRemoved, this, &PiecesModel::onPieceRemoved);
 
-void PiecesModel::reset()
-{
-    beginResetModel();
-
-    mPieces.clear();
-
-    mPieces.emplace_back("white", "rook", 0, 7);
-    mPieces.emplace_back("white", "knight", 1, 7);
-    mPieces.emplace_back("white", "bishop", 2, 7);
-    mPieces.emplace_back("white", "queen", 3, 7);
-    mPieces.emplace_back("white", "king", 4, 7);
-    mPieces.emplace_back("white", "bishop", 5, 7);
-    mPieces.emplace_back("white", "knight", 6, 7);
-    mPieces.emplace_back("white", "rook", 7, 7);
-
-    mPieces.emplace_back("white", "pawn", 0, 6);
-    mPieces.emplace_back("white", "pawn", 1, 6);
-    mPieces.emplace_back("white", "pawn", 2, 6);
-    mPieces.emplace_back("white", "pawn", 3, 6);
-    mPieces.emplace_back("white", "pawn", 4, 6);
-    mPieces.emplace_back("white", "pawn", 5, 6);
-    mPieces.emplace_back("white", "pawn", 6, 6);
-    mPieces.emplace_back("white", "pawn", 7, 6);
-
-
-    mPieces.emplace_back("black", "rook", 0, 0);
-    mPieces.emplace_back("black", "knight", 1, 0);
-    mPieces.emplace_back("black", "bishop", 2, 0);
-    mPieces.emplace_back("black", "queen", 3, 0);
-    mPieces.emplace_back("black", "king", 4, 0);
-    mPieces.emplace_back("black", "bishop", 5, 0);
-    mPieces.emplace_back("black", "knight", 6, 0);
-    mPieces.emplace_back("black", "rook", 7, 0);
-
-    mPieces.emplace_back("black", "pawn", 0, 1);
-    mPieces.emplace_back("black", "pawn", 1, 1);
-    mPieces.emplace_back("black", "pawn", 2, 1);
-    mPieces.emplace_back("black", "pawn", 3, 1);
-    mPieces.emplace_back("black", "pawn", 4, 1);
-    mPieces.emplace_back("black", "pawn", 5, 1);
-    mPieces.emplace_back("black", "pawn", 6, 1);
-    mPieces.emplace_back("black", "pawn", 7, 1);
-
-    endResetModel();
-}
-
-void PiecesModel::doMove(int fromX, int fromY, int toX, int toY)
-{
-    for(size_t i=0; i<mPieces.size(); ++i)
-    {
-        auto& piece = mPieces[i];
-
-        if(piece.mX == fromX && piece.mY == fromY)
-        {
-            piece.mX = toX;
-            piece.mY = toY;
-            emit dataChanged(index(static_cast<int>(i)), index(static_cast<int>(i)), {X, Y});
-            break;
-        }
-    }
 }
 
 QHash<int, QByteArray> PiecesModel::roleNames() const
@@ -119,3 +63,60 @@ int PiecesModel::rowCount(const QModelIndex & parent) const
     return static_cast<int>(mPieces.size());
 }
 
+void PiecesModel::onPieceMoved(int originX, int originY, int destinationX, int destinationY)
+{
+    for(size_t i=0; i<mPieces.size(); ++i)
+    {
+        auto& piece = mPieces[i];
+
+        if(piece.mX == originX && piece.mY == originY)
+        {
+            piece.mX = destinationX;
+            piece.mY = destinationY;
+            emit dataChanged(index(static_cast<int>(i)), index(static_cast<int>(i)), {X, Y});
+            break;
+        }
+    }
+}
+
+void PiecesModel::onPieceAdded()
+{
+
+}
+
+void PiecesModel::onPieceRemoved(int x, int y)
+{
+    Q_UNUSED(x)
+    Q_UNUSED(y)
+}
+
+void PiecesModel::onAlan()
+{
+    beginResetModel();
+
+    mPieces.clear();
+
+    auto board = mGame.getBoard();
+
+    for(size_t i=0; i<board.size(); i++)
+    {
+        for(size_t j=0; j<board[i].size(); ++j)
+        {
+            auto const& square = board[i][j];
+
+            switch (square)
+            {
+            case Piece::EWhitePawn:
+                mPieces.emplace_back("white", "pawn", i, j);
+                break;
+            case Piece::EBlackPawn:
+                mPieces.emplace_back("black", "pawn", i, j);
+                break;
+            default:
+                continue;
+            }
+        }
+    }
+
+    endResetModel();
+}

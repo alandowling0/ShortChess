@@ -31,10 +31,21 @@ Window {
     }
 
     Item {
+        id: boardArea
+
+//        RotationAnimation on rotation {
+//            loops: Animation.Infinite
+//            duration: 10000
+//            from: 0
+//            to: 360
+//        }
+
         anchors.top: topBar.bottom
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right
+
+        rotation: rotateSwitch.checked ? 180 : 0
 
         Board {
             anchors.centerIn: parent
@@ -58,6 +69,8 @@ Window {
                 anchors.fill: parent
 
                 size: parent.size
+
+                rotateBoard: rotateSwitch.checked
 
                 onPieceClicked: {
                     selectedX = x
@@ -95,12 +108,20 @@ Window {
         width: 0.66 * parent.width
         height: parent.height
 
-        Button {
-            text: "New Game"
-            onClicked: {
-                gameController.newGame()
+        Column {
+            Button {
+                text: "New Game"
+                onClicked: {
+                    gameController.newGame()
 
-                drawer.close()
+                    drawer.close()
+                }
+            }
+
+            Switch {
+                id: rotateSwitch
+
+                text: "Rotate Board"
             }
         }
     }
