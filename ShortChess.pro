@@ -1,5 +1,5 @@
 QT += quick
-CONFIG += c++11
+CONFIG += c++1y
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
@@ -17,7 +17,8 @@ SOURCES += \
     piecesmodel.cpp \
     gamecontroller.cpp \
     highlightsmodel.cpp \
-    game.cpp
+    game.cpp \
+    model.cpp
 
 RESOURCES += qml.qrc
 
@@ -36,4 +37,5 @@ HEADERS += \
     piecesmodel.h \
     gamecontroller.h \
     highlightsmodel.h \
-    game.h
+    game.h \
+    model.h

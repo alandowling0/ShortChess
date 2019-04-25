@@ -14,7 +14,7 @@ Item {
     Repeater {
         id: piecesRepeater
 
-        model: piecesModel
+        model: chessModel.piecesModel
 
         function pieceImagePath(type, color) {
             let path = "images/"

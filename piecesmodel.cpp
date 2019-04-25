@@ -3,7 +3,7 @@
 #include <QTimer>
 
 
-PiecesModel::PiecesModel(Game& game):
+PiecesModel::PiecesModel(Game const& game):
     mGame(game)
 {
     connect(&mGame, &Game::alan, this, &PiecesModel::onAlan);

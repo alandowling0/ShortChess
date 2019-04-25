@@ -33,13 +33,6 @@ Window {
     Item {
         id: boardArea
 
-//        RotationAnimation on rotation {
-//            loops: Animation.Infinite
-//            duration: 10000
-//            from: 0
-//            to: 360
-//        }
-
         anchors.top: topBar.bottom
         anchors.bottom: parent.bottom
         anchors.left: parent.left

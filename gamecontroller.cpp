@@ -1,18 +1,20 @@
 #include "gamecontroller.h"
+#include <QSet>
 #include <QPair>
 
-GameController::GameController(Game& game, HighlightsModel& highlightsModel) :
-    mGame(game), mHighlightsModel(highlightsModel)
+Controller::Controller(Model& model, Game& game) :
+    mModel(model),
+    mGame(game)
 {
 }
 
-void GameController::newGame()
+void Controller::newGame()
 {
     mGame.newGame();
-    mHighlightsModel.clear();
+    //mHighlightsModel.clear();
 }
 
-void GameController::showDestinations(int x, int y)
+void Controller::showDestinations(int x, int y)
 {
     QSet<QPair<int, int>> destinations;
 
@@ -21,15 +23,15 @@ void GameController::showDestinations(int x, int y)
         destinations.insert({m.mDestinationX, m.mDestinationY});
     }
 
-    mHighlightsModel.setDestinations(destinations);
+    mModel.setDestinations(destinations);
 }
 
-void GameController::clearDestinations()
+void Controller::clearDestinations()
 {
-    mHighlightsModel.clear();
+    //mHighlightsModel.clear();
 }
 
-void GameController::doMove(int fromX, int fromY, int toX, int toY)
+void Controller::doMove(int fromX, int fromY, int toX, int toY)
 {
     mGame.playMove(Move(fromX, fromY, toX, toY));
 }

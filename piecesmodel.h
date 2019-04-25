@@ -32,7 +32,7 @@ public:
         Y
     };
 
-    PiecesModel(Game& game);
+    PiecesModel(Game const& game);
 
     QHash<int, QByteArray> roleNames() const override;
     QVariant data(const QModelIndex & index, int role) const override;
@@ -46,7 +46,7 @@ public slots:
 
 private:
     std::vector<Piece2> mPieces;
-    Game& mGame;
+    Game const& mGame;
 
 
 };

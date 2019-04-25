@@ -16,15 +16,10 @@ int main(int argc, char *argv[])
     auto game = new Game();
     auto model = new Model(*game);
     auto controller = new Controller(*model, *game);
-    //auto piecesModel = new PiecesModel(*game);
-    //auto highlightsModel = new HighlightsModel();
-    //auto gameController = new GameController(*game, *highlightsModel);
 
     QQmlApplicationEngine engine;
 
     engine.rootContext()->setContextProperty(QString("chessModel"), model);
-//    engine.rootContext()->setContextProperty(QString("piecesModel"), piecesModel);
-//    engine.rootContext()->setContextProperty(QString("highlightsModel"), highlightsModel);
     engine.rootContext()->setContextProperty(QString("gameController"), controller);
 
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));

@@ -9,7 +9,7 @@ Item {
     signal selectedClicked
 
     Repeater {
-        model: highlightsModel.destinations
+        model: chessModel.highlightsModel.destinations
 
         delegate: Item {
 
@@ -31,5 +31,4 @@ Item {
             }
         }
     }
-
 }

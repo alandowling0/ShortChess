@@ -1,16 +1,16 @@
 #pragma once
 
-#include "piecesmodel.h"
-#include "highlightsmodel.h"
+#include "model.h"
 #include "game.h"
 
 #include <QObject>
 
-class GameController : public QObject
+class Controller : public QObject
 {
     Q_OBJECT
+
 public:
-    GameController(Game& piecesModel, HighlightsModel& highlightsModel);
+    Controller(Model& model, Game& game);
 
     Q_INVOKABLE void newGame();
     Q_INVOKABLE void showDestinations(int x, int y);
@@ -18,6 +18,6 @@ public:
     Q_INVOKABLE void doMove(int fromX, int fromY, int toX, int toY);
 
 private:
+    Model& mModel;
     Game& mGame;
-    HighlightsModel& mHighlightsModel;
 };
