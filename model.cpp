@@ -1,17 +1,38 @@
 #include "model.h"
 
-Model::Model(Game const& game) :
-    mGame(game),
-    mPiecesModel(std::make_unique<PiecesModel>(game)),
+Model::Model() :
+    mPiecesModel(std::make_unique<PiecesModel>(mGame)),
     mHighlightsModel(std::make_unique<HighlightsModel>())
 {
 
 }
 
-//QVariant Model::piecesModel() const
-//{
-//    return QVariant::fromValue(mPiecesModel);
-//}
+void Model::newGame()
+{
+    mGame.newGame();
+}
+
+void Model::doMove(int fromX, int fromY, int toX, int toY)
+{
+    mGame.playMove(Move(fromX, fromY, toX, toY));
+}
+
+void Model::showDestinations(int x, int y)
+{
+    QSet<QPair<int, int>> destinations;
+
+    for(auto const& m : mGame.getLegalMoves(x, y))
+    {
+        destinations.insert({m.mDestinationX, m.mDestinationY});
+    }
+
+    mHighlightsModel->setDestinations(destinations);
+}
+
+void Model::clearDestinations()
+{
+    mHighlightsModel->clear();
+}
 
 QVariant Model::piecesModel() const
 {
@@ -23,14 +44,3 @@ QVariant Model::highlightsModel() const
     return QVariant::fromValue(mHighlightsModel.get());
 }
 
-void Model::setDestinations(QSet<QPair<int, int>> const& destinations)
-{
-    if(mHighlightsModel)
-    {
-        mHighlightsModel->setDestinations(destinations);
-    }
-    else
-    {
-        Q_ASSERT(false);
-    }
-}

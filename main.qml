@@ -8,8 +8,6 @@ Window {
     height: 480
     title: qsTr("Hello World")
 
-    Component.onCompleted: gameController.newGame()
-
     Rectangle {
         anchors.fill: parent
 
@@ -52,7 +50,7 @@ Window {
                 onClicked: {
                     pieces.selectedX = -1
                     pieces.selectedY = -1
-                    gameController.clearDestinations();
+                    chessModel.clearDestinations();
                 }
             }
 
@@ -69,7 +67,7 @@ Window {
                     selectedX = x
                     selectedY = y
 
-                    gameController.showDestinations(x, y)
+                    chessModel.showDestinations(x, y)
                 }
             }
 
@@ -83,13 +81,13 @@ Window {
                     const fromY = pieces.selectedY
 
                     if(fromX >= 0 && fromY >= 0) {
-                        gameController.doMove(fromX, fromY, x, y)
+                        chessModel.doMove(fromX, fromY, x, y)
 
                         pieces.selectedX = -1
                         pieces.selectedY = -1
                     }
 
-                    gameController.clearDestinations();
+                    chessModel.clearDestinations();
                 }
             }
         }
@@ -105,7 +103,7 @@ Window {
             Button {
                 text: "New Game"
                 onClicked: {
-                    gameController.newGame()
+                    chessModel.newGame()
 
                     drawer.close()
                 }

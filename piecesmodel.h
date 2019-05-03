@@ -42,11 +42,11 @@ public slots:
     void onPieceMoved(int originX, int originY, int destinationX, int destinationY);
     void onPieceAdded();
     void onPieceRemoved(int x, int y);
-    void onAlan();
+    void onPiecesReset();
 
 private:
-    std::vector<Piece2> mPieces;
     Game const& mGame;
+    std::vector<Piece2> mPieces;
 
 
 };

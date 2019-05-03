@@ -3,14 +3,15 @@
 #include <QTimer>
 
 
-PiecesModel::PiecesModel(Game const& game):
+PiecesModel::PiecesModel(Game const& game) :
     mGame(game)
 {
-    connect(&mGame, &Game::alan, this, &PiecesModel::onAlan);
+    connect(&mGame, &Game::piecesReset, this, &PiecesModel::onPiecesReset);
     connect(&mGame, &Game::pieceMoved, this, &PiecesModel::onPieceMoved);
     connect(&mGame, &Game::pieceAdded, this, &PiecesModel::onPieceAdded);
     connect(&mGame, &Game::pieceRemoved, this, &PiecesModel::onPieceRemoved);
 
+    onPiecesReset();
 }
 
 QHash<int, QByteArray> PiecesModel::roleNames() const
@@ -90,7 +91,7 @@ void PiecesModel::onPieceRemoved(int x, int y)
     Q_UNUSED(y)
 }
 
-void PiecesModel::onAlan()
+void PiecesModel::onPiecesReset()
 {
     beginResetModel();
 
