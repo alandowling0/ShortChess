@@ -67,6 +67,11 @@ std::vector<Move> Game::getLegalMoves(int originX, int originY) const
                 {
                     moves.emplace_back(x, y, x, y-1);
                 }
+
+                if(y == mBoard[x].size() - 2)
+                {
+                    moves.emplace_back(x, y, x, y-2);
+                }
             }
         }
         else if(piece == Piece::EBlackPawn)
@@ -76,6 +81,11 @@ std::vector<Move> Game::getLegalMoves(int originX, int originY) const
                 if(y + 1 < mBoard[x].size())
                 {
                     moves.emplace_back(x, y, x, y+1);
+                }
+
+                if(y == 1)
+                {
+                    moves.emplace_back(x, y, x, y+2);
                 }
             }
         }
