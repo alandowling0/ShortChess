@@ -7,8 +7,13 @@ Game::Game()
 
 void Game::playMove(Move const& aMove)
 {
-    mBoard[aMove.mDestinationX][aMove.mDestinationY] = mBoard[aMove.mOriginX][aMove.mOriginY];
-    mBoard[aMove.mOriginX][aMove.mOriginY] = Piece::ENone;
+    auto originX = static_cast<size_t>(aMove.mOriginX);
+    auto originY = static_cast<size_t>(aMove.mOriginY);
+    auto destinationX = static_cast<size_t>(aMove.mDestinationX);
+    auto destinationY = static_cast<size_t>(aMove.mDestinationY);
+
+    mBoard[destinationX][destinationY] = mBoard[originX][originY];
+    mBoard[originX][originY] = Piece::ENone;
     mMoves.push_back(aMove);
 
     emit pieceMoved(aMove.mOriginX, aMove.mOriginY, aMove.mDestinationX, aMove.mDestinationY);
@@ -23,7 +28,6 @@ void Game::redoMove()
 {
 
 }
-
 
 void Game::newGame()
 {
@@ -44,29 +48,35 @@ std::vector<Move> Game::getMovesPlayed() const
     return mMoves;
 }
 
-std::vector<Move> Game::getLegalMoves(size_t x, size_t y) const
+std::vector<Move> Game::getLegalMoves(int originX, int originY) const
 {
     std::vector<Move> moves;
 
-    auto& piece = mBoard[x][y];
+    auto x = static_cast<size_t>(originX);
+    auto y = static_cast<size_t>(originY);
 
-    if(piece == Piece::EWhitePawn)
+    if(x < mBoard.size() && y < mBoard[x].size())
     {
-        if(sideToMove() == Color::EWhite)
+        auto& piece = mBoard[x][y];
+
+        if(piece == Piece::EWhitePawn)
         {
-            if(y >= 1)
+            if(sideToMove() == Color::EWhite)
             {
-                moves.emplace_back(x, y, x, y-1);
+                if(y >= 1)
+                {
+                    moves.emplace_back(x, y, x, y-1);
+                }
             }
         }
-    }
-    else if(piece == Piece::EBlackPawn)
-    {
-        if(sideToMove() == Color::EBlack)
+        else if(piece == Piece::EBlackPawn)
         {
-            if(y + 1 < 8)
+            if(sideToMove() == Color::EBlack)
             {
-                moves.emplace_back(x, y, x, y+1);
+                if(y + 1 < mBoard[x].size())
+                {
+                    moves.emplace_back(x, y, x, y+1);
+                }
             }
         }
     }

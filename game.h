@@ -8,7 +8,7 @@
 
 struct Move
 {
-    Move(size_t originX, size_t originY, size_t destinationX, size_t destinationY) :
+    Move(int originX, int originY, int destinationX, int destinationY) :
         mOriginX(originX),
         mOriginY(originY),
         mDestinationX(destinationX),
@@ -16,10 +16,10 @@ struct Move
     {
     }
 
-    size_t mOriginX;
-    size_t mOriginY;
-    size_t mDestinationX;
-    size_t mDestinationY;
+    int mOriginX;
+    int mOriginY;
+    int mDestinationX;
+    int mDestinationY;
 };
 
 class Game : public QObject
@@ -36,7 +36,7 @@ public:
 
     std::vector<std::vector<Piece>> getBoard() const;
     std::vector<Move> getMovesPlayed() const;
-    std::vector<Move> getLegalMoves(size_t x, size_t y) const;
+    std::vector<Move> getLegalMoves(int originX, int originY) const;
 
 signals:
     void pieceMoved(int originX, int originY, int destinationX, int destinationY);
