@@ -12,9 +12,22 @@ class PiecesModel : public QAbstractListModel
     Q_OBJECT
 
 public:
-    struct Piece2
+    PiecesModel(Game const& game);
+
+    QHash<int, QByteArray> roleNames() const override;
+    QVariant data(const QModelIndex & index, int role) const override;
+    int rowCount(const QModelIndex & parent = QModelIndex()) const override;
+
+private slots:
+    void onPieceMoved(int originX, int originY, int destinationX, int destinationY);
+    void onPieceAdded();
+    void onPieceRemoved(int x, int y);
+    void onPiecesReset();
+
+private:
+    struct PieceInfo
     {
-        Piece2(QString color, QString type, int x, int y) :
+        PieceInfo(QString color, QString type, int x, int y) :
             mColor(color), mType(type), mX(x), mY(y)
         {
         }
@@ -32,21 +45,6 @@ public:
         Y
     };
 
-    PiecesModel(Game const& game);
-
-    QHash<int, QByteArray> roleNames() const override;
-    QVariant data(const QModelIndex & index, int role) const override;
-    int rowCount(const QModelIndex & parent = QModelIndex()) const override;
-
-public slots:
-    void onPieceMoved(int originX, int originY, int destinationX, int destinationY);
-    void onPieceAdded();
-    void onPieceRemoved(int x, int y);
-    void onPiecesReset();
-
-private:
     Game const& mGame;
-    std::vector<Piece2> mPieces;
-
-
+    std::vector<PieceInfo> mPieces;
 };

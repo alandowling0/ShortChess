@@ -36,4 +36,6 @@ HEADERS += \
     piecesmodel.h \
     highlightsmodel.h \
     game.h \
-    model.h
+    model.h \
+    piece.h \
+    color.h

@@ -1,30 +1,10 @@
 #pragma once
 
+#include "piece.h"
+#include "color.h"
 #include <QObject>
 #include <vector>
 
-enum class Color
-{
-    EWhite,
-    EBlack
-};
-
-enum class Piece
-{
-    ENone,
-    EWhitePawn,
-    EWhiteKnight,
-    EWhiteBishop,
-    EWhiteRook,
-    EWhiteQueen,
-    EWhiteKing,
-    EBlackPawn,
-    EBlackKnight,
-    EBlackBishop,
-    EBlackRook,
-    EBlackQueen,
-    EBlackKing
-};
 
 struct Move
 {
@@ -70,15 +50,4 @@ private:
 
     std::vector<std::vector<Piece>> mBoard;
     std::vector<Move> mMoves;
-
-
 };
-
-
-//class PawnGame : public Game
-//{
-//public:
-//    PawnGame();
-
-
-//};
