@@ -38,4 +38,5 @@ HEADERS += \
     game.h \
     model.h \
     piece.h \
-    color.h
+    color.h \
+    move.h

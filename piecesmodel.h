@@ -38,7 +38,8 @@ private:
         int mY;
     };
 
-    enum PieceRole {
+    enum PieceRole
+    {
         Color = Qt::UserRole + 1,
         Type,
         X,
