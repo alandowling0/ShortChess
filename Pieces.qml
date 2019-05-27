@@ -4,8 +4,6 @@ Item {
     id: root
 
     property int size: 8
-    property int selectedX: -1
-    property int selectedY: -1
     property bool rotateBoard: false
 
     signal pieceClicked(int x, int y)
@@ -55,7 +53,7 @@ Item {
 
             property real modelX: model.x
             property real modelY: model.y
-            property bool selected: (model.x === root.selectedX) && (model.y === root.selectedY)
+            property bool selected: (model.x === chessModel.highlightsModel.selected.x) && (model.y === chessModel.highlightsModel.selected.y)
 
             opacity: selected ? 0.5 : 1.0
 
@@ -80,11 +78,6 @@ Item {
                 anchors.fill: parent
                 source: piecesRepeater.pieceImagePath(model.type, model.color)
                 rotation: root.rotateBoard ? 180 : 0
-            }
-
-            MouseArea {
-                anchors.fill: parent
-                onClicked: root.pieceClicked(modelX, modelY)
             }
         }
     }

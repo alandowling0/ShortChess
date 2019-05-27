@@ -17,9 +17,7 @@ public:
     Model();
 
     Q_INVOKABLE void newGame();
-    Q_INVOKABLE void doMove(int fromX, int fromY, int toX, int toY);
-    Q_INVOKABLE void showDestinations(int x, int y);
-    Q_INVOKABLE void clearDestinations();
+    Q_INVOKABLE void selectSquare(int x, int y);
 
     QVariant piecesModel() const;
     QVariant highlightsModel() const;

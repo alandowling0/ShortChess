@@ -23,12 +23,6 @@ Item {
                 color: "green"
                 opacity: 0.5
             }
-
-            MouseArea {
-                anchors.fill: parent
-
-                onClicked: root.destinationClicked(modelData.x, modelData.y)
-            }
         }
     }
 }

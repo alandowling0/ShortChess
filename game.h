@@ -14,7 +14,7 @@ class Game : public QObject
 public:
     Game();
 
-    void playMove(Move const& aMove);
+    void doMove(Move const& aMove);
     void undoMove();
     void redoMove();
     void newGame();

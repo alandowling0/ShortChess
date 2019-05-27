@@ -12,26 +12,34 @@ void Model::newGame()
     mGame.newGame();
 }
 
-void Model::doMove(int fromX, int fromY, int toX, int toY)
+void Model::selectSquare(int x, int y)
 {
-    mGame.playMove(Move(fromX, fromY, toX, toY));
-}
+    auto highlighted = mHighlightsModel->isHighlighted(x, y);
 
-void Model::showDestinations(int x, int y)
-{
+    if(highlighted)
+    {
+        auto selected = mHighlightsModel->selected();
+        mGame.doMove({selected.value("x").toInt(), selected.value("y").toInt(), x, y});
+        mHighlightsModel->clear();
+
+        return;
+    }
+
+    auto moves = mGame.getLegalMoves(x, y);
+    if(moves.empty())
+    {
+        mHighlightsModel->clear();
+        return;
+    }
+
     QSet<QPair<int, int>> destinations;
-
-    for(auto const& m : mGame.getLegalMoves(x, y))
+    for(auto const& m : moves)
     {
         destinations.insert({m.mDestinationX, m.mDestinationY});
     }
 
     mHighlightsModel->setDestinations(destinations);
-}
-
-void Model::clearDestinations()
-{
-    mHighlightsModel->clear();
+    mHighlightsModel->setSelected({x, y});
 }
 
 QVariant Model::piecesModel() const

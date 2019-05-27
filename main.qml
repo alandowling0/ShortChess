@@ -45,13 +45,8 @@ Window {
 
             size: 8
 
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    pieces.selectedX = -1
-                    pieces.selectedY = -1
-                    chessModel.clearDestinations();
-                }
+            onSquareClicked: {
+                chessModel.selectSquare(x, y)
             }
 
             Pieces {
@@ -62,33 +57,12 @@ Window {
                 size: parent.size
 
                 rotateBoard: rotateSwitch.checked
-
-                onPieceClicked: {
-                    selectedX = x
-                    selectedY = y
-
-                    chessModel.showDestinations(x, y)
-                }
             }
 
             Highlights {
                 anchors.fill: parent
 
                 size: parent.size
-
-                onDestinationClicked: {
-                    const fromX = pieces.selectedX
-                    const fromY = pieces.selectedY
-
-                    if(fromX >= 0 && fromY >= 0) {
-                        chessModel.doMove(fromX, fromY, x, y)
-
-                        pieces.selectedX = -1
-                        pieces.selectedY = -1
-                    }
-
-                    chessModel.clearDestinations();
-                }
             }
         }
     }

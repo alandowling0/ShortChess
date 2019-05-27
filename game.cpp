@@ -5,7 +5,7 @@ Game::Game()
     resetPieces();
 }
 
-void Game::playMove(Move const& aMove)
+void Game::doMove(Move const& aMove)
 {
     auto originX = static_cast<size_t>(aMove.mOriginX);
     auto originY = static_cast<size_t>(aMove.mOriginY);
