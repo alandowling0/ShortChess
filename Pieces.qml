@@ -14,38 +14,8 @@ Item {
 
         model: chessModel.piecesModel
 
-        function pieceImagePath(type, color) {
-            let path = "images/"
-
-            if(color === "white") {
-                path += "White"
-            }
-            else {
-                path += "Black"
-            }
-
-            if(type === "pawn") {
-                path += "Pawn"
-            }
-            else if(type === "knight") {
-                path += "Knight"
-            }
-            else if(type === "bishop") {
-                path += "Bishop"
-            }
-            else if(type === "rook") {
-                path += "Rook"
-            }
-            else if(type === "queen") {
-                path += "Queen"
-            }
-            else if(type === "king") {
-                path += "King"
-            }
-
-            path += ".png"
-
-            return path
+        function pieceImagePath(type) {
+            return "images/" + type + ".png"
         }
 
         delegate: Item {
@@ -76,7 +46,7 @@ Item {
 
             Image {
                 anchors.fill: parent
-                source: piecesRepeater.pieceImagePath(model.type, model.color)
+                source: piecesRepeater.pieceImagePath(model.type)
                 rotation: root.rotateBoard ? 180 : 0
             }
         }

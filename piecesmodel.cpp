@@ -1,7 +1,5 @@
 #include "piecesmodel.h"
 
-#include <QTimer>
-
 
 PiecesModel::PiecesModel(Game const& game) :
     mGame(game)
@@ -18,7 +16,6 @@ QHash<int, QByteArray> PiecesModel::roleNames() const
 {
     return
     {
-        {Color, "color"},
         {Type, "type"},
         {X, "x"},
         {Y, "y"}
@@ -37,9 +34,6 @@ QVariant PiecesModel::data(const QModelIndex & index, int role) const
 
         switch (role)
         {
-        case Color:
-            data = QVariant(piece.mColor);
-            break;
         case Type:
             data = QVariant(piece.mType);
             break;
@@ -50,7 +44,7 @@ QVariant PiecesModel::data(const QModelIndex & index, int role) const
             data = QVariant(piece.mY);
             break;
         default:
-            assert(false);
+            Q_ASSERT(false);
         }
     }
 
@@ -108,10 +102,10 @@ void PiecesModel::onPiecesReset()
             switch (square)
             {
             case Piece::EWhitePawn:
-                mPieces.emplace_back("white", "pawn", i, j);
+                mPieces.emplace_back("WhitePawn", i, j);
                 break;
             case Piece::EBlackPawn:
-                mPieces.emplace_back("black", "pawn", i, j);
+                mPieces.emplace_back("BlackPawn", i, j);
                 break;
             default:
                 continue;

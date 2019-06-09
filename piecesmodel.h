@@ -3,7 +3,6 @@
 #include "game.h"
 
 #include <QAbstractListModel>
-#include <QTimer>
 #include <vector>
 
 
@@ -27,12 +26,11 @@ private slots:
 private:
     struct PieceInfo
     {
-        PieceInfo(QString color, QString type, int x, int y) :
-            mColor(color), mType(type), mX(x), mY(y)
+        PieceInfo(QString type, int x, int y) :
+            mType(type), mX(x), mY(y)
         {
         }
 
-        QString mColor;
         QString mType;
         int mX;
         int mY;
@@ -40,8 +38,7 @@ private:
 
     enum PieceRole
     {
-        Color = Qt::UserRole + 1,
-        Type,
+        Type = Qt::UserRole + 1,
         X,
         Y
     };
