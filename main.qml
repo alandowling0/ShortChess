@@ -38,6 +38,10 @@ Window {
 
         rotation: rotateSwitch.checked ? 180 : 0
 
+        Behavior on rotation {
+            NumberAnimation{}
+        }
+
         Board {
             anchors.centerIn: parent
             height: Math.min(parent.height, parent.width)
@@ -87,6 +91,8 @@ Window {
                 id: rotateSwitch
 
                 text: "Rotate Board"
+
+                onCheckedChanged: drawer.close()
             }
         }
     }
