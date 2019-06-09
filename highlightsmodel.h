@@ -17,9 +17,6 @@ public:
     QVariantList destinations() const;
     void setDestinations(QSet<QPair<int, int>> const& destinations);
 
-    bool isHighlighted(int x, int y) const;
-
-
     void clear();
 
 signals:

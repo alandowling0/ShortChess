@@ -26,11 +26,6 @@ void HighlightsModel::setDestinations(const QSet<QPair<int, int>> &destinations)
     emit destinationsChanged();
 }
 
-bool HighlightsModel::isHighlighted(int x, int y) const
-{
-    return mDestinations.contains({x, y});
-}
-
 void HighlightsModel::clear()
 {
     mDestinations.clear();
