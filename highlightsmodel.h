@@ -27,6 +27,5 @@ signals:
     void destinationsChanged();
 
 private:
-    QPair<int, int> mSelected;
     QSet<QPair<int, int>> mDestinations;
 };

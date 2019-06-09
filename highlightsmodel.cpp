@@ -1,8 +1,7 @@
 #include "highlightsmodel.h"
 #include <QDebug>
 
-HighlightsModel::HighlightsModel() :
-    mSelected(-1, -1)
+HighlightsModel::HighlightsModel()
 {
 
 }
@@ -35,9 +34,6 @@ bool HighlightsModel::isHighlighted(int x, int y) const
 void HighlightsModel::clear()
 {
     mDestinations.clear();
-    mSelected.first = -1;
-    mSelected.second = -1;
 
     emit destinationsChanged();
-    emit selectedChanged();
 }
