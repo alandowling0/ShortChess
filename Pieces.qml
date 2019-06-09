@@ -53,7 +53,7 @@ Item {
 
             property real modelX: model.x
             property real modelY: model.y
-            property bool selected: (model.x === chessModel.selectedSquare.x) && (model.y === chessModel.selectedSquare.y)
+            property bool selected: (model.x === chessModel.selected.x) && (model.y === chessModel.selected.y)
 
             opacity: selected ? 0.5 : 1.0
 

@@ -15,7 +15,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
     piecesmodel.cpp \
-    highlightsmodel.cpp \
     game.cpp \
     model.cpp \
     piece.cpp
@@ -35,7 +34,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     piecesmodel.h \
-    highlightsmodel.h \
     game.h \
     model.h \
     piece.h \

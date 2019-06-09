@@ -2,27 +2,24 @@
 
 Model::Model() :
     mPiecesModel(std::make_unique<PiecesModel>(mGame)),
-    mHighlightsModel(std::make_unique<HighlightsModel>()),
-    mSelectedX(-1),
-    mSelectedY(-1)
+    mSelected{-1, -1}
 {
-
 }
 
 void Model::newGame()
 {
     mGame.newGame();
 
-    mHighlightsModel->clear();
+    mHighlighted.clear();
+    emit highlightedChanged();
 
-    mSelectedX = -1;
-    mSelectedY = -1;
-    emit selectedSquareChanged();
+    mSelected = {-1, -1};
+    emit selectedChanged();
 }
 
 void Model::selectSquare(int x, int y)
 {
-    auto legalMoves = mGame.getLegalMoves(mSelectedX, mSelectedY);
+    auto legalMoves = mGame.getLegalMoves(mSelected.first, mSelected.second);
     auto iter = std::find_if(legalMoves.begin(), legalMoves.end(), [x, y](auto move){
         return move.mDestinationX == x && move.mDestinationY == y;
     });
@@ -30,9 +27,8 @@ void Model::selectSquare(int x, int y)
     if(iter != legalMoves.end())
     {
         mGame.doMove(*iter);
-        mSelectedX = -1;
-        mSelectedY = -1;
-        mHighlightsModel->clear();
+        mSelected = {-1, -1};
+        mHighlighted.clear();
     }
     else
     {
@@ -51,29 +47,26 @@ void Model::selectSquare(int x, int y)
 
             if(selectable)
             {
-                mSelectedX = x;
-                mSelectedY = y;
+                mSelected = {x, y};
 
                 auto moves = mGame.getLegalMoves(x, y);
 
-                QSet<QPair<int, int>> destinations;
+                mHighlighted.clear();
                 for(auto const& m : moves)
                 {
-                    destinations.insert({m.mDestinationX, m.mDestinationY});
+                    mHighlighted.insert({m.mDestinationX, m.mDestinationY});
                 }
-
-                mHighlightsModel->setDestinations(destinations);
             }
             else
             {
-                mSelectedX = -1;
-                mSelectedY = -1;
-                mHighlightsModel->clear();
+                mSelected = {-1, -1};
+                mHighlighted.clear();
             }
         }
     }
 
-    emit selectedSquareChanged();
+    emit selectedChanged();
+    emit highlightedChanged();
 }
 
 QVariant Model::piecesModel() const
@@ -81,12 +74,19 @@ QVariant Model::piecesModel() const
     return QVariant::fromValue(mPiecesModel.get());
 }
 
-QVariant Model::highlightsModel() const
+QVariantMap Model::selected() const
 {
-    return QVariant::fromValue(mHighlightsModel.get());
+    return QVariantMap{{"x", mSelected.first}, {"y", mSelected.second}};
 }
 
-QVariantMap Model::selectedSquare() const
+QVariantList Model::highlighted() const
 {
-    return QVariantMap{{"x", mSelectedX}, {"y", mSelectedY}};
+    QVariantList highlighted;
+
+    for(auto const& h : mHighlighted)
+    {
+        highlighted.push_back(QVariantMap{{"x", h.first}, {"y", h.second}});
+    }
+
+    return highlighted;
 }
