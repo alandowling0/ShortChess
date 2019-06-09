@@ -22,6 +22,7 @@ public:
     std::vector<std::vector<Piece>> getBoard() const;
     std::vector<Move> getMovesPlayed() const;
     std::vector<Move> getLegalMoves(int originX, int originY) const;
+    Color sideToMove() const;
 
 signals:
     void pieceMoved(int originX, int originY, int destinationX, int destinationY);
@@ -31,7 +32,6 @@ signals:
 
 private:
     void resetPieces();
-    Color sideToMove() const;
 
     std::vector<std::vector<Piece>> mBoard;
     std::vector<Move> mMoves;

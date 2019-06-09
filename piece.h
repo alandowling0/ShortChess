@@ -16,3 +16,10 @@ enum class Piece
     EBlackQueen,
     EBlackKing
 };
+
+namespace PieceUtils
+{
+    bool isWhite(Piece piece);
+
+    bool isBlack(Piece piece);
+}

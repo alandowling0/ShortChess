@@ -12,6 +12,7 @@ class Model : public QObject
 
     Q_PROPERTY(QVariant piecesModel READ piecesModel CONSTANT)
     Q_PROPERTY(QVariant highlightsModel READ highlightsModel CONSTANT)
+    Q_PROPERTY(QVariantMap selectedSquare READ selectedSquare NOTIFY selectedSquareChanged)
 
 public:
     Model();
@@ -21,9 +22,15 @@ public:
 
     QVariant piecesModel() const;
     QVariant highlightsModel() const;
+    QVariantMap selectedSquare() const;
+
+signals:
+    void selectedSquareChanged();
 
 private:
     Game mGame;
     std::unique_ptr<PiecesModel> mPiecesModel;
     std::unique_ptr<HighlightsModel> mHighlightsModel;
+    int mSelectedX;
+    int mSelectedY;
 };

@@ -7,21 +7,6 @@ HighlightsModel::HighlightsModel() :
 
 }
 
-QVariantMap HighlightsModel::selected() const
-{
-    return {{"x", mSelected.first}, {"y", mSelected.second}};
-}
-
-void HighlightsModel::setSelected(QPair<int, int> selected)
-{
-    if(mSelected != selected)
-    {
-        mSelected = selected;
-
-        emit selectedChanged();
-    }
-}
-
 QVariantList HighlightsModel::destinations() const
 {
     QVariantList destinations;

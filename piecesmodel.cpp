@@ -21,7 +21,7 @@ QHash<int, QByteArray> PiecesModel::roleNames() const
         {Color, "color"},
         {Type, "type"},
         {X, "x"},
-        {Y, "y"},
+        {Y, "y"}
     };
 }
 
