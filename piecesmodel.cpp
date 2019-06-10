@@ -58,6 +58,14 @@ int PiecesModel::rowCount(const QModelIndex & parent) const
     return static_cast<int>(mPieces.size());
 }
 
+bool PiecesModel::removeRows(int row, int count, const QModelIndex &parent)
+{
+    beginRemoveRows(parent, row, row+count-1);
+    mPieces.erase(mPieces.begin() + row, mPieces.begin() + row + count);
+    endRemoveRows();
+    return true;
+}
+
 void PiecesModel::onPieceMoved(int originX, int originY, int destinationX, int destinationY)
 {
     for(size_t i=0; i<mPieces.size(); ++i)
@@ -81,8 +89,15 @@ void PiecesModel::onPieceAdded()
 
 void PiecesModel::onPieceRemoved(int x, int y)
 {
-    Q_UNUSED(x)
-    Q_UNUSED(y)
+    for(size_t i=0; i<mPieces.size(); ++i)
+    {
+        auto& piece = mPieces[i];
+
+        if(piece.mX == x && piece.mY == y)
+        {
+            removeRows(static_cast<int>(i), 1);
+        }
+    }
 }
 
 void PiecesModel::onPiecesReset()

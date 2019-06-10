@@ -14,6 +14,8 @@ void Game::doMove(Move const& aMove)
 
     mBoard[destinationX][destinationY] = mBoard[originX][originY];
     mBoard[originX][originY] = Piece::ENone;
+    emit pieceRemoved(static_cast<int>(destinationX), static_cast<int>(destinationY));
+
     mMoves.push_back(aMove);
 
     emit pieceMoved(aMove.mOriginX, aMove.mOriginY, aMove.mDestinationX, aMove.mDestinationY);

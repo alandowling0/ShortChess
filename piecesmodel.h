@@ -16,6 +16,7 @@ public:
     QHash<int, QByteArray> roleNames() const override;
     QVariant data(const QModelIndex & index, int role) const override;
     int rowCount(const QModelIndex & parent = QModelIndex()) const override;
+    bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
 
 private slots:
     void onPieceMoved(int originX, int originY, int destinationX, int destinationY);
