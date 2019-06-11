@@ -67,12 +67,32 @@ std::vector<Move> Game::getLegalMoves(int originX, int originY) const
             {
                 if(y >= 1)
                 {
-                    moves.emplace_back(x, y, x, y-1);
-                }
+                    if(mBoard[x][y-1] == Piece::ENone)
+                    {
+                        moves.emplace_back(x, y, x, y-1);
 
-                if(y == mBoard[x].size() - 2)
-                {
-                    moves.emplace_back(x, y, x, y-2);
+                        if(y == mBoard[x].size() - 2)
+                        {
+                            if(mBoard[x][y-2] == Piece::ENone)
+                            {
+                                moves.emplace_back(x, y, x, y-2);
+                            }
+                        }
+                    }
+                    if(x > 0)
+                    {
+                        if(PieceUtils::isBlack(mBoard[x-1][y-1]))
+                        {
+                            moves.emplace_back(x, y, x-1, y-1);
+                        }
+                    }
+                    if(x < mBoard.size() - 1)
+                    {
+                        if(PieceUtils::isBlack(mBoard[x+1][y-1]))
+                        {
+                            moves.emplace_back(x, y, x+1, y-1);
+                        }
+                    }
                 }
             }
         }
@@ -82,12 +102,32 @@ std::vector<Move> Game::getLegalMoves(int originX, int originY) const
             {
                 if(y + 1 < mBoard[x].size())
                 {
-                    moves.emplace_back(x, y, x, y+1);
-                }
+                    if(mBoard[x][y+1] == Piece::ENone)
+                    {
+                        moves.emplace_back(x, y, x, y+1);
 
-                if(y == 1)
-                {
-                    moves.emplace_back(x, y, x, y+2);
+                        if(y == 1)
+                        {
+                            if(mBoard[x][y+2] == Piece::ENone)
+                            {
+                                moves.emplace_back(x, y, x, y+2);
+                            }
+                        }
+                    }
+                    if(x > 0)
+                    {
+                        if(PieceUtils::isWhite(mBoard[x-1][y+1]))
+                        {
+                            moves.emplace_back(x, y, x-1, y+1);
+                        }
+                    }
+                    if(x < mBoard.size() - 1)
+                    {
+                        if(PieceUtils::isWhite(mBoard[x+1][y+1]))
+                        {
+                            moves.emplace_back(x, y, x+1, y+1);
+                        }
+                    }
                 }
             }
         }
