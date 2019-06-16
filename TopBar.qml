@@ -5,6 +5,7 @@ Item {
     id: root
 
     property string title: "Title"
+    property bool portrait: true
 
     signal settingsClicked()
 
@@ -13,8 +14,8 @@ Item {
 
         anchors.top: parent.top
         anchors.left: parent.left
-        anchors.bottom: parent.bottom
-        width: height
+        height: 50
+        width: 50
 
         Image {
             anchors.fill: parent
@@ -34,9 +35,10 @@ Item {
     }
 
     Text {
+        visible: root.portrait
         anchors.centerIn: parent
 
-        font.pointSize: 24
+        font.pointSize: 22
 
         text: root.title
     }

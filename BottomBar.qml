@@ -14,57 +14,77 @@ Item {
 
         color: "transparent"
 
+        Item {
+            id: buttonsModel
+
+            Item {
+                function onClicked(){console.log("new game"); root.newGameClicked()}
+                property string image: "newgame.svg"
+            }
+
+            Item {
+                function onClicked(){console.log("takebackmove"); root.takeBackMoveClicked()}
+                property string image: "takebackmove.svg"
+            }
+
+            Item {
+                function onClicked(){console.log("redomove"); root.redoMoveClicked()}
+                property string image: "redomove.svg"
+            }
+
+            Item {
+                function onClicked(){console.log("movenow"); root.moveNowClicked()}
+                property string image: "movenow.svg"
+            }
+        }
+
+        Component {
+            id: button
+
+            Item {
+               height: 50
+               width: 50
+
+               Image {
+                   anchors.fill: parent
+
+                   source: "images/" + modelData.image
+
+                   sourceSize.width: 50
+                   sourceSize.height: 50
+
+                   MouseArea {
+                       anchors.fill: parent
+
+                       onClicked: modelData.onClicked()
+                   }
+               }
+           }
+        }
+
         Row {
+            visible: root.height <= root.width
             anchors.centerIn: parent
             height: parent.height
             spacing: 10
 
-            Item {
-                id: buttonsModel
+            Repeater {
+                model: buttonsModel.children
 
-                Item {
-                    function onClicked(){console.log("new game"); root.newGameClicked()}
-                    property string image: "newgame.svg"
-                }
-
-                Item {
-                    function onClicked(){console.log("takebackmove"); root.takeBackMoveClicked()}
-                    property string image: "takebackmove.svg"
-                }
-
-                Item {
-                    function onClicked(){console.log("redomove"); root.redoMoveClicked()}
-                    property string image: "redomove.svg"
-                }
-
-                Item {
-                    function onClicked(){console.log("movenow"); root.moveNowClicked()}
-                    property string image: "movenow.svg"
-                }
+                delegate: button
             }
+        }
+
+        Column {
+            visible: root.height > root.width
+            anchors.centerIn: parent
+            width: parent.width
+            spacing: 10
 
             Repeater {
                 model: buttonsModel.children
 
-                delegate: Item {
-                    height: parent.height
-                    width: height
-
-                    Image {
-                        anchors.fill: parent
-
-                        source: "images/" + modelData.image
-
-                        sourceSize.width: 50
-                        sourceSize.height: 50
-
-                        MouseArea {
-                            anchors.fill: parent
-
-                            onClicked: modelData.onClicked()
-                        }
-                    }
-                }
+                delegate: button
             }
         }
     }

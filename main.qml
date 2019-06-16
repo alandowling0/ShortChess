@@ -3,6 +3,10 @@ import QtQuick.Window 2.12
 import QtQuick.Controls 2.5
 
 Window {
+    id: root
+
+    property bool portrait: height >= width
+
     visible: true
     width: 640
     height: 480
@@ -22,19 +26,20 @@ Window {
 
         anchors.top: parent.top
         anchors.left: parent.left
-        anchors.right: parent.right
-        height: 50
+        width: root.portrait ? parent.width : 50
+        height: root.portrait ? 50 : parent.height
 
+        portrait: root.portrait
         onSettingsClicked: drawer.open()
     }
 
     Item {
         id: boardArea
 
-        anchors.top: topBar.bottom
-        anchors.bottom: bottomBarArea.top
-        anchors.left: parent.left
-        anchors.right: parent.right
+        anchors.top: root.portrait ? topBar.bottom : parent.top
+        anchors.bottom: root.portrait ? bottomBarArea.top : parent.bottom
+        anchors.left: root.portrait ? parent.left : topBar.right
+        anchors.right: root.portrait ? parent.right : bottomBarArea.left
         anchors.margins: 5
 
         rotation: rotateSwitch.checked ? 180 : 0
@@ -76,9 +81,9 @@ Window {
         id: bottomBarArea
 
         anchors.bottom: parent.bottom
-        anchors.left: parent.left
         anchors.right: parent.right
-        height: 50
+        width: root.portrait ? parent.width : 50
+        height: root.portrait ? 50 : parent.height
 
         onNewGameClicked: chessModel.newGame()
     }
