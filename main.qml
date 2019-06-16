@@ -25,16 +25,17 @@ Window {
         anchors.right: parent.right
         height: 50
 
-        onMenuClicked: drawer.open()
+        onSettingsClicked: drawer.open()
     }
 
     Item {
         id: boardArea
 
         anchors.top: topBar.bottom
-        anchors.bottom: parent.bottom
+        anchors.bottom: bottomBarArea.top
         anchors.left: parent.left
         anchors.right: parent.right
+        anchors.margins: 5
 
         rotation: rotateSwitch.checked ? 180 : 0
 
@@ -71,6 +72,17 @@ Window {
         }
     }
 
+    BottomBar {
+        id: bottomBarArea
+
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: 50
+
+        onNewGameClicked: chessModel.newGame()
+    }
+
     Drawer {
         id: drawer
 
@@ -78,19 +90,10 @@ Window {
         height: parent.height
 
         Column {
-            Button {
-                text: "New Game"
-                onClicked: {
-                    chessModel.newGame()
-
-                    drawer.close()
-                }
-            }
-
             Switch {
                 id: rotateSwitch
 
-                text: "Rotate Board"
+                text: qsTr("Rotate Board")
 
                 onCheckedChanged: drawer.close()
             }

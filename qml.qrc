@@ -18,5 +18,11 @@
         <file>Highlights.qml</file>
         <file>TopBar.qml</file>
         <file>images/menu.png</file>
+        <file>BottomBar.qml</file>
+        <file>images/newgame.svg</file>
+        <file>images/movenow.svg</file>
+        <file>images/redomove.svg</file>
+        <file>images/takebackmove.svg</file>
+        <file>images/settings.svg</file>
     </qresource>
 </RCC>

@@ -1,4 +1,5 @@
 QT += quick
+QT += svg
 CONFIG += c++1y
 
 # The following define makes your compiler emit warnings if you use

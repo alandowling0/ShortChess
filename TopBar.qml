@@ -6,22 +6,30 @@ Item {
 
     property string title: "Title"
 
-    signal menuClicked()
+    signal settingsClicked()
 
-    Image {
-        anchors.verticalCenter: parent.verticalCenter
+    Item {
+        id: settingsIconArea
+
+        anchors.top: parent.top
         anchors.left: parent.left
-        anchors.leftMargin: 5
-        width: 50
+        anchors.bottom: parent.bottom
+        width: height
 
-        height: Math.min(parent.height - 5, 50)
-
-        source: "images/menu.png"
-
-        MouseArea {
+        Image {
             anchors.fill: parent
+            anchors.margins: 3
 
-            onClicked: root.menuClicked()
+            sourceSize.height: height
+            sourceSize.width: width
+
+            source: "images/settings.svg"
+
+            MouseArea {
+                anchors.fill: parent
+
+                onClicked: root.settingsClicked()
+            }
         }
     }
 

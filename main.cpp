@@ -1,6 +1,9 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QtQml>
+#ifdef Q_OS_ANDROID
+#include <QtSvg>    //Because deployment sometimes just forgets to include this lib otherwise
+#endif
 #include "model.h"
 
 int main(int argc, char *argv[])
