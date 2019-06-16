@@ -85,7 +85,7 @@ Window {
         width: root.portrait ? parent.width : 50
         height: root.portrait ? 50 : parent.height
 
-        onNewGameClicked: chessModel.newGame()
+        onNewGameClicked: newGameConfirmationDialog.open()
     }
 
     Drawer {
@@ -102,6 +102,44 @@ Window {
 
                 onCheckedChanged: drawer.close()
             }
+        }
+    }
+
+    Item {
+        anchors.fill: parent
+        visible: newGameConfirmationDialog.visible
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {}
+        }
+
+        Dialog {
+            id: newGameConfirmationDialog
+
+            title: qsTr("New Game")
+
+            contentItem: Item {
+                anchors.fill: parent
+
+                Text {
+                    anchors.centerIn: parent
+                    width: parent.width * 0.95
+
+                    verticalAlignment: Text.AlignVCenter
+                    horizontalAlignment: Text.AlignHCenter
+
+                    wrapMode: Text.WordWrap
+                    text: qsTr("Are you sure you want to start a new game?")
+                }
+            }
+
+            standardButtons: Dialog.Yes
+
+            onAccepted: chessModel.newGame()
+
+            anchors.centerIn: parent
+            width: 300
         }
     }
 }
