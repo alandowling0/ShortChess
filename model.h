@@ -14,6 +14,7 @@ class Model : public QObject
     Q_PROPERTY(QVariant piecesModel READ piecesModel CONSTANT)
     Q_PROPERTY(QVariantMap selected READ selected NOTIFY selectedChanged)
     Q_PROPERTY(QVariantList highlighted READ highlighted NOTIFY highlightedChanged)
+    Q_PROPERTY(bool newGameAvailable READ newGameAvailable NOTIFY newGameAvailableChanged)
 
 public:
     Model();
@@ -24,10 +25,12 @@ public:
     QVariant piecesModel() const;
     QVariantMap selected() const;
     QVariantList highlighted() const;
+    bool newGameAvailable() const;
 
 signals:
     void selectedChanged();
     void highlightedChanged();
+    void newGameAvailableChanged();
 
 private:
     Game mGame;

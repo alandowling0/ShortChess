@@ -4,6 +4,8 @@ Model::Model() :
     mPiecesModel(std::make_unique<PiecesModel>(mGame)),
     mSelected{-1, -1}
 {
+    connect(&mGame, &Game::pieceMoved, this, &Model::newGameAvailableChanged);
+    connect(&mGame, &Game::piecesReset, this, &Model::newGameAvailableChanged);
 }
 
 void Model::newGame()
@@ -89,4 +91,9 @@ QVariantList Model::highlighted() const
     }
 
     return highlighted;
+}
+
+bool Model::newGameAvailable() const
+{
+    return mGame.getMovesPlayed().size() > 0;
 }

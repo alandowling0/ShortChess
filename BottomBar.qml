@@ -20,6 +20,7 @@ Item {
             Item {
                 function onClicked(){console.log("new game"); root.newGameClicked()}
                 property string image: "newgame.svg"
+                property bool enabled: chessModel.newGameAvailable
             }
 
             Item {
@@ -45,6 +46,8 @@ Item {
                height: 50
                width: 50
 
+               opacity: modelData.enabled ? 1.0 : 0.5
+
                Image {
                    anchors.fill: parent
 
@@ -56,6 +59,7 @@ Item {
                    MouseArea {
                        anchors.fill: parent
 
+                       enabled: modelData.enabled
                        onClicked: modelData.onClicked()
                    }
                }
