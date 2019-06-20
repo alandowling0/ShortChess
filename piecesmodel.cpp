@@ -108,13 +108,13 @@ void PiecesModel::onPiecesReset()
 
     auto board = mGame.getBoard();
 
-    for(size_t i=0; i<board.size(); i++)
+    for(auto i=0; i<board.size(); i++)
     {
-        for(size_t j=0; j<board[i].size(); ++j)
+        for(auto j=0; j<board.size(); ++j)
         {
-            auto const& square = board[i][j];
+            auto const& piece = board.piece(i, j);
 
-            switch (square)
+            switch (piece)
             {
             case Piece::EWhitePawn:
                 mPieces.emplace_back("WhitePawn", i, j);

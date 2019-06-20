@@ -21,7 +21,13 @@ void Model::newGame()
 
 void Model::selectSquare(int x, int y)
 {
-    auto legalMoves = mGame.getLegalMoves(mSelected.first, mSelected.second);
+    auto squareSelected = mSelected.first >= 0 && mSelected.second >= 0;
+
+    std::vector<Move> legalMoves;
+    if(squareSelected)
+    {
+        legalMoves = mGame.getLegalMoves(mSelected.first, mSelected.second);
+    }
     auto iter = std::find_if(legalMoves.begin(), legalMoves.end(), [x, y](auto move){
         return move.mDestinationX == x && move.mDestinationY == y;
     });
@@ -37,12 +43,9 @@ void Model::selectSquare(int x, int y)
         auto sideToMove = mGame.sideToMove();
         auto board = mGame.getBoard();
 
-        auto xUnsigned = static_cast<size_t>(x);
-        auto yUnsigned = static_cast<size_t>(y);
-
-        if(xUnsigned < board.size() && yUnsigned < board[xUnsigned].size())
+        if(x < board.size() && y < board.size())
         {
-            auto piece = board[xUnsigned][yUnsigned];
+            auto piece = board.piece(x, y);
 
             auto selectable = (PieceUtils::isWhite(piece) && sideToMove == Color::EWhite) ||
                                 (PieceUtils::isBlack(piece) && sideToMove == Color::EBlack);

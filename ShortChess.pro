@@ -18,7 +18,8 @@ SOURCES += \
     piecesmodel.cpp \
     game.cpp \
     model.cpp \
-    piece.cpp
+    piece.cpp \
+    board.cpp
 
 RESOURCES += qml.qrc
 
@@ -39,7 +40,8 @@ HEADERS += \
     model.h \
     piece.h \
     color.h \
-    move.h
+    move.h \
+    board.h
 
 DISTFILES += \
     diagram.qmodel

@@ -1,20 +1,16 @@
 #include "game.h"
 
-Game::Game()
+Game::Game():
+    mBoard(8)
 {
     resetPieces();
 }
 
 void Game::doMove(Move const& aMove)
 {
-    auto originX = static_cast<size_t>(aMove.mOriginX);
-    auto originY = static_cast<size_t>(aMove.mOriginY);
-    auto destinationX = static_cast<size_t>(aMove.mDestinationX);
-    auto destinationY = static_cast<size_t>(aMove.mDestinationY);
-
-    mBoard[destinationX][destinationY] = mBoard[originX][originY];
-    mBoard[originX][originY] = Piece::ENone;
-    emit pieceRemoved(static_cast<int>(destinationX), static_cast<int>(destinationY));
+    mBoard.setPiece(aMove.mDestinationX, aMove.mDestinationY, mBoard.piece(aMove.mOriginX, aMove.mOriginY));
+    mBoard.setPiece(aMove.mOriginX, aMove.mOriginY, Piece::ENone);
+    emit pieceRemoved(aMove.mDestinationX, aMove.mDestinationY);
 
     mMoves.push_back(aMove);
 
@@ -40,7 +36,7 @@ void Game::newGame()
     emit piecesReset();
 }
 
-std::vector<std::vector<Piece>> Game::getBoard() const
+Board Game::getBoard() const
 {
     return mBoard;
 }
@@ -50,84 +46,72 @@ std::vector<Move> Game::getMovesPlayed() const
     return mMoves;
 }
 
-std::vector<Move> Game::getLegalMoves(int originX, int originY) const
+std::vector<Move> Game::getLegalMoves(int x, int y) const
 {
     std::vector<Move> moves;
 
-    auto x = static_cast<size_t>(originX);
-    auto y = static_cast<size_t>(originY);
+    auto piece = mBoard.piece(x, y);
 
-    if(x < mBoard.size() && y < mBoard[x].size())
+    if(piece == Piece::EWhitePawn && sideToMove() == Color::EWhite)
     {
-        auto& piece = mBoard[x][y];
-
-        if(piece == Piece::EWhitePawn)
+        if(y >= 1)
         {
-            if(sideToMove() == Color::EWhite)
+            if(mBoard.piece(x, y-1) == Piece::ENone)
             {
-                if(y >= 1)
-                {
-                    if(mBoard[x][y-1] == Piece::ENone)
-                    {
-                        moves.emplace_back(x, y, x, y-1);
+                moves.emplace_back(x, y, x, y-1);
 
-                        if(y == mBoard[x].size() - 2)
-                        {
-                            if(mBoard[x][y-2] == Piece::ENone)
-                            {
-                                moves.emplace_back(x, y, x, y-2);
-                            }
-                        }
-                    }
-                    if(x > 0)
+                if(y == mBoard.size() - 2)
+                {
+                    if(mBoard.piece(x, y-2) == Piece::ENone)
                     {
-                        if(PieceUtils::isBlack(mBoard[x-1][y-1]))
-                        {
-                            moves.emplace_back(x, y, x-1, y-1);
-                        }
-                    }
-                    if(x < mBoard.size() - 1)
-                    {
-                        if(PieceUtils::isBlack(mBoard[x+1][y-1]))
-                        {
-                            moves.emplace_back(x, y, x+1, y-1);
-                        }
+                        moves.emplace_back(x, y, x, y-2);
                     }
                 }
             }
-        }
-        else if(piece == Piece::EBlackPawn)
-        {
-            if(sideToMove() == Color::EBlack)
+            if(x > 0)
             {
-                if(y + 1 < mBoard[x].size())
+                if(PieceUtils::isBlack(mBoard.piece(x-1, y-1)))
                 {
-                    if(mBoard[x][y+1] == Piece::ENone)
-                    {
-                        moves.emplace_back(x, y, x, y+1);
+                    moves.emplace_back(x, y, x-1, y-1);
+                }
+            }
+            if(x < mBoard.size() - 1)
+            {
+                if(PieceUtils::isBlack(mBoard.piece(x+1, y-1)))
+                {
+                    moves.emplace_back(x, y, x+1, y-1);
+                }
+            }
+        }
+    }
+    else if(piece == Piece::EBlackPawn && sideToMove() == Color::EBlack)
+    {
+        if(y + 1 < mBoard.size())
+        {
+            if(mBoard.piece(x, y+1) == Piece::ENone)
+            {
+                moves.emplace_back(x, y, x, y+1);
 
-                        if(y == 1)
-                        {
-                            if(mBoard[x][y+2] == Piece::ENone)
-                            {
-                                moves.emplace_back(x, y, x, y+2);
-                            }
-                        }
-                    }
-                    if(x > 0)
+                if(y == 1)
+                {
+                    if(mBoard.piece(x, y+2) == Piece::ENone)
                     {
-                        if(PieceUtils::isWhite(mBoard[x-1][y+1]))
-                        {
-                            moves.emplace_back(x, y, x-1, y+1);
-                        }
+                        moves.emplace_back(x, y, x, y+2);
                     }
-                    if(x < mBoard.size() - 1)
-                    {
-                        if(PieceUtils::isWhite(mBoard[x+1][y+1]))
-                        {
-                            moves.emplace_back(x, y, x+1, y+1);
-                        }
-                    }
+                }
+            }
+            if(x > 0)
+            {
+                if(PieceUtils::isWhite(mBoard.piece(x-1, y+1)))
+                {
+                    moves.emplace_back(x, y, x-1, y+1);
+                }
+            }
+            if(x < mBoard.size() - 1)
+            {
+                if(PieceUtils::isWhite(mBoard.piece(x+1, y+1)))
+                {
+                    moves.emplace_back(x, y, x+1, y+1);
                 }
             }
         }
@@ -138,35 +122,25 @@ std::vector<Move> Game::getLegalMoves(int originX, int originY) const
 
 void Game::resetPieces()
 {
-    mBoard.clear();
+    mBoard = Board(8);
 
-    for(size_t i=0; i<8; ++i)
-    {
-        mBoard.emplace_back();
+    mBoard.setPiece(0, 6, Piece::EWhitePawn);
+    mBoard.setPiece(1, 6, Piece::EWhitePawn);
+    mBoard.setPiece(2, 6, Piece::EWhitePawn);
+    mBoard.setPiece(3, 6, Piece::EWhitePawn);
+    mBoard.setPiece(4, 6, Piece::EWhitePawn);
+    mBoard.setPiece(5, 6, Piece::EWhitePawn);
+    mBoard.setPiece(6, 6, Piece::EWhitePawn);
+    mBoard.setPiece(7, 6, Piece::EWhitePawn);
 
-        for(size_t j=0; j<8; ++j)
-        {
-            mBoard[i].emplace_back(Piece::ENone);
-        }
-    }
-
-    mBoard[0][1] = Piece::EBlackPawn;
-    mBoard[1][1] = Piece::EBlackPawn;
-    mBoard[2][1] = Piece::EBlackPawn;
-    mBoard[3][1] = Piece::EBlackPawn;
-    mBoard[4][1] = Piece::EBlackPawn;
-    mBoard[5][1] = Piece::EBlackPawn;
-    mBoard[6][1] = Piece::EBlackPawn;
-    mBoard[7][1] = Piece::EBlackPawn;
-
-    mBoard[0][6] = Piece::EWhitePawn;
-    mBoard[1][6] = Piece::EWhitePawn;
-    mBoard[2][6] = Piece::EWhitePawn;
-    mBoard[3][6] = Piece::EWhitePawn;
-    mBoard[4][6] = Piece::EWhitePawn;
-    mBoard[5][6] = Piece::EWhitePawn;
-    mBoard[6][6] = Piece::EWhitePawn;
-    mBoard[7][6] = Piece::EWhitePawn;
+    mBoard.setPiece(0, 1, Piece::EBlackPawn);
+    mBoard.setPiece(1, 1, Piece::EBlackPawn);
+    mBoard.setPiece(2, 1, Piece::EBlackPawn);
+    mBoard.setPiece(3, 1, Piece::EBlackPawn);
+    mBoard.setPiece(4, 1, Piece::EBlackPawn);
+    mBoard.setPiece(5, 1, Piece::EBlackPawn);
+    mBoard.setPiece(6, 1, Piece::EBlackPawn);
+    mBoard.setPiece(7, 1, Piece::EBlackPawn);
 }
 
 Color Game::sideToMove() const

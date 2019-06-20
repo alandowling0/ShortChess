@@ -3,6 +3,7 @@
 #include "piece.h"
 #include "color.h"
 #include "move.h"
+#include "board.h"
 #include <QObject>
 #include <vector>
 
@@ -19,9 +20,9 @@ public:
     void redoMove();
     void newGame();
 
-    std::vector<std::vector<Piece>> getBoard() const;
+    Board getBoard() const;
     std::vector<Move> getMovesPlayed() const;
-    std::vector<Move> getLegalMoves(int originX, int originY) const;
+    std::vector<Move> getLegalMoves(int x, int y) const;
     Color sideToMove() const;
 
 signals:
@@ -33,6 +34,6 @@ signals:
 private:
     void resetPieces();
 
-    std::vector<std::vector<Piece>> mBoard;
+    Board mBoard;
     std::vector<Move> mMoves;
 };
