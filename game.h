@@ -36,4 +36,5 @@ private:
 
     Board mBoard;
     std::vector<Move> mMoves;
+    int mEnPassantX;
 };

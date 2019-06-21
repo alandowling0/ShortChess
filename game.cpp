@@ -1,20 +1,46 @@
 #include "game.h"
 
 Game::Game():
-    mBoard(8)
+    mBoard(8),
+    mEnPassantX(-1)
 {
     resetPieces();
 }
 
 void Game::doMove(Move const& aMove)
 {
-    mBoard.setPiece(aMove.mDestinationX, aMove.mDestinationY, mBoard.piece(aMove.mOriginX, aMove.mOriginY));
+    mEnPassantX = -1;
+
+    auto piece = mBoard.piece(aMove.mOriginX, aMove.mOriginY);
+    auto captured = mBoard.piece(aMove.mDestinationX, aMove.mDestinationY);
+
+    auto pawnMove = (piece == Piece::EWhitePawn) || (piece == Piece::EBlackPawn);
+    if(pawnMove)
+    {
+        auto pawnAdvancingTwoSquares = std::abs(aMove.mOriginY - aMove.mDestinationY) > 1;
+        if(pawnAdvancingTwoSquares)
+        {
+            mEnPassantX = aMove.mDestinationX;
+        }
+
+        auto enPassant = (aMove.mDestinationX != aMove.mOriginX) && (captured == Piece::ENone);
+        if(enPassant)
+        {
+            mBoard.setPiece(aMove.mDestinationX, aMove.mOriginY, Piece::ENone);
+            emit pieceRemoved(aMove.mDestinationX, aMove.mOriginY);
+        }
+    }
+
+    if(captured != Piece::ENone)
+    {
+        emit pieceRemoved(aMove.mDestinationX, aMove.mDestinationY);
+    }
+
+    mBoard.setPiece(aMove.mDestinationX, aMove.mDestinationY, piece);
     mBoard.setPiece(aMove.mOriginX, aMove.mOriginY, Piece::ENone);
-    emit pieceRemoved(aMove.mDestinationX, aMove.mDestinationY);
+    emit pieceMoved(aMove.mOriginX, aMove.mOriginY, aMove.mDestinationX, aMove.mDestinationY);
 
     mMoves.push_back(aMove);
-
-    emit pieceMoved(aMove.mOriginX, aMove.mOriginY, aMove.mDestinationX, aMove.mDestinationY);
 }
 
 void Game::undoMove()
@@ -82,7 +108,25 @@ std::vector<Move> Game::getLegalMoves(int x, int y) const
                     moves.emplace_back(x, y, x+1, y-1);
                 }
             }
+
+            auto enpassantAvailable = mEnPassantX >= 0;
+            if(enpassantAvailable)
+            {
+                if(y == 3)
+                {
+                    if(x+1 == mEnPassantX)
+                    {
+                        moves.emplace_back(x, y, x+1, y-1);
+                    }
+                    else if(x-1 == mEnPassantX)
+                    {
+                        moves.emplace_back(x, y, x-1, y-1);
+                    }
+                }
+            }
         }
+
+
     }
     else if(piece == Piece::EBlackPawn && sideToMove() == Color::EBlack)
     {
@@ -112,6 +156,22 @@ std::vector<Move> Game::getLegalMoves(int x, int y) const
                 if(PieceUtils::isWhite(mBoard.piece(x+1, y+1)))
                 {
                     moves.emplace_back(x, y, x+1, y+1);
+                }
+            }
+
+            auto enpassantAvailable = mEnPassantX >= 0;
+            if(enpassantAvailable)
+            {
+                if(y == mBoard.size() - 4)
+                {
+                    if(x+1 == mEnPassantX)
+                    {
+                        moves.emplace_back(x, y, x+1, y+1);
+                    }
+                    else if(x-1 == mEnPassantX)
+                    {
+                        moves.emplace_back(x, y, x-1, y+1);
+                    }
                 }
             }
         }
