@@ -18,23 +18,25 @@ Item {
             id: buttonsModel
 
             Item {
-                function onClicked(){console.log("new game"); root.newGameClicked()}
+                function onClicked(){root.newGameClicked()}
                 property string image: "newgame.svg"
                 property bool enabled: chessModel.newGameAvailable
             }
 
             Item {
-                function onClicked(){console.log("takebackmove"); root.takeBackMoveClicked()}
+                function onClicked(){root.takeBackMoveClicked()}
                 property string image: "takebackmove.svg"
+                property bool enabled: chessModel.undoMoveAvailable
             }
 
             Item {
-                function onClicked(){console.log("redomove"); root.redoMoveClicked()}
+                function onClicked(){root.redoMoveClicked()}
                 property string image: "redomove.svg"
+                property bool enabled: chessModel.redoMoveAvailable
             }
 
             Item {
-                function onClicked(){console.log("movenow"); root.moveNowClicked()}
+                function onClicked(){root.moveNowClicked()}
                 property string image: "movenow.svg"
             }
         }

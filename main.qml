@@ -86,6 +86,8 @@ Window {
         height: root.portrait ? 50 : parent.height
 
         onNewGameClicked: newGameConfirmationDialog.open()
+        onTakeBackMoveClicked: chessModel.undoMove()
+        onRedoMoveClicked: chessModel.redoMove()
     }
 
     Drawer {
@@ -134,7 +136,7 @@ Window {
                 }
             }
 
-            standardButtons: Dialog.Yes
+            standardButtons: Dialog.Yes | Dialog.No
 
             onAccepted: chessModel.newGame()
 

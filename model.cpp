@@ -4,13 +4,36 @@ Model::Model() :
     mPiecesModel(std::make_unique<PiecesModel>(mGame)),
     mSelected{-1, -1}
 {
-    connect(&mGame, &Game::pieceMoved, this, &Model::newGameAvailableChanged);
-    connect(&mGame, &Game::piecesReset, this, &Model::newGameAvailableChanged);
 }
 
 void Model::newGame()
 {
     mGame.newGame();
+    emit gameStateChanged();
+
+    mHighlighted.clear();
+    emit highlightedChanged();
+
+    mSelected = {-1, -1};
+    emit selectedChanged();
+}
+
+void Model::undoMove()
+{
+    mGame.undoMove();
+    emit gameStateChanged();
+
+    mHighlighted.clear();
+    emit highlightedChanged();
+
+    mSelected = {-1, -1};
+    emit selectedChanged();
+}
+
+void Model::redoMove()
+{
+    mGame.redoMove();
+    emit gameStateChanged();
 
     mHighlighted.clear();
     emit highlightedChanged();
@@ -35,6 +58,8 @@ void Model::selectSquare(int x, int y)
     if(iter != legalMoves.end())
     {
         mGame.doMove(*iter);
+        emit gameStateChanged();
+
         mSelected = {-1, -1};
         mHighlighted.clear();
     }
@@ -99,4 +124,14 @@ QVariantList Model::highlighted() const
 bool Model::newGameAvailable() const
 {
     return mGame.getMovesPlayed().size() > 0;
+}
+
+bool Model::undoMoveAvailable() const
+{
+    return mGame.undoCount() < mGame.getMovesPlayed().size();
+}
+
+bool Model::redoMoveAvailable() const
+{
+    return mGame.undoCount() > 0;
 }

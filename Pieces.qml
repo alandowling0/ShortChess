@@ -14,8 +14,8 @@ Item {
 
         model: chessModel.piecesModel
 
-        function pieceImagePath(type) {
-            return "images/" + type + ".png"
+        function pieceImagePath(image) {
+            return "images/" + image + ".png"
         }
 
         delegate: Item {
@@ -46,7 +46,7 @@ Item {
 
             Image {
                 anchors.fill: parent
-                source: piecesRepeater.pieceImagePath(model.type)
+                source: piecesRepeater.pieceImagePath(model.image)
                 rotation: root.rotateBoard ? 180 : 0
             }
         }

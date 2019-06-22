@@ -16,7 +16,7 @@ QHash<int, QByteArray> PiecesModel::roleNames() const
 {
     return
     {
-        {Type, "type"},
+        {Image, "image"},
         {X, "x"},
         {Y, "y"}
     };
@@ -34,8 +34,8 @@ QVariant PiecesModel::data(const QModelIndex & index, int role) const
 
         switch (role)
         {
-        case Type:
-            data = QVariant(piece.mType);
+        case Image:
+            data = QVariant(piece.mImage);
             break;
         case X:
             data = QVariant(piece.mX);
@@ -58,14 +58,6 @@ int PiecesModel::rowCount(const QModelIndex & parent) const
     return static_cast<int>(mPieces.size());
 }
 
-bool PiecesModel::removeRows(int row, int count, const QModelIndex &parent)
-{
-    beginRemoveRows(parent, row, row+count-1);
-    mPieces.erase(mPieces.begin() + row, mPieces.begin() + row + count);
-    endRemoveRows();
-    return true;
-}
-
 void PiecesModel::onPieceMoved(int originX, int originY, int destinationX, int destinationY)
 {
     for(size_t i=0; i<mPieces.size(); ++i)
@@ -76,15 +68,19 @@ void PiecesModel::onPieceMoved(int originX, int originY, int destinationX, int d
         {
             piece.mX = destinationX;
             piece.mY = destinationY;
-            emit dataChanged(index(static_cast<int>(i)), index(static_cast<int>(i)), {X, Y});
+            auto theIndex = index(static_cast<int>(i));
+            emit dataChanged(theIndex, theIndex, {X, Y});
             break;
         }
     }
 }
 
-void PiecesModel::onPieceAdded()
+void PiecesModel::onPieceAdded(int x, int y, Piece piece)
 {
-
+    auto size = static_cast<int>(mPieces.size());
+    beginInsertRows(QModelIndex(), size, size);
+    mPieces.emplace_back(image(piece), x, y);
+    endInsertRows();
 }
 
 void PiecesModel::onPieceRemoved(int x, int y)
@@ -95,7 +91,10 @@ void PiecesModel::onPieceRemoved(int x, int y)
 
         if(piece.mX == x && piece.mY == y)
         {
-            removeRows(static_cast<int>(i), 1);
+            auto pos = static_cast<int>(i);
+            beginRemoveRows(QModelIndex(), pos, pos);
+            mPieces.erase(mPieces.begin() + pos, mPieces.begin() + pos + 1);
+            endRemoveRows();
         }
     }
 }
@@ -114,19 +113,25 @@ void PiecesModel::onPiecesReset()
         {
             auto const& piece = board.piece(i, j);
 
-            switch (piece)
+            if(piece != Piece::ENone)
             {
-            case Piece::EWhitePawn:
-                mPieces.emplace_back("WhitePawn", i, j);
-                break;
-            case Piece::EBlackPawn:
-                mPieces.emplace_back("BlackPawn", i, j);
-                break;
-            default:
-                continue;
+                mPieces.emplace_back(image(piece), i, j);
             }
         }
     }
 
     endResetModel();
+}
+
+QString PiecesModel::image(Piece piece) const
+{
+    switch(piece)
+    {
+    case Piece::EWhitePawn:
+        return "WhitePawn";
+    case Piece::EBlackPawn:
+        return "BlackPawn";
+    default:
+        return QString();
+    }
 }

@@ -16,30 +16,31 @@ public:
     QHash<int, QByteArray> roleNames() const override;
     QVariant data(const QModelIndex & index, int role) const override;
     int rowCount(const QModelIndex & parent = QModelIndex()) const override;
-    bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
 
 private slots:
     void onPieceMoved(int originX, int originY, int destinationX, int destinationY);
-    void onPieceAdded();
+    void onPieceAdded(int x, int y, Piece piece);
     void onPieceRemoved(int x, int y);
     void onPiecesReset();
 
 private:
+    QString image(Piece piece) const;
+
     struct PieceInfo
     {
-        PieceInfo(QString type, int x, int y) :
-            mType(type), mX(x), mY(y)
+        PieceInfo(QString image, int x, int y) :
+            mImage(image), mX(x), mY(y)
         {
         }
 
-        QString mType;
+        QString mImage;
         int mX;
         int mY;
     };
 
     enum PieceRole
     {
-        Type = Qt::UserRole + 1,
+        Image = Qt::UserRole + 1,
         X,
         Y
     };
