@@ -1,18 +1,44 @@
 #pragma once
 
-#include <vector>
+#include <array>
 #include "piece.h"
 
+template <int R, int C>
 class Board
 {
 public:
-    Board(int size);
+    Board()
+    {
+        for(auto & row : mPieces)
+        {
+            for(auto & piece : row)
+            {
+                piece = Piece::ENone;
+            }
+        }
+    }
 
-    int size() const;
-    Piece piece(int x, int y) const;
-    void setPiece(int x, int y, Piece piece);
+    int rows() const
+    {
+        return R;
+    }
+
+    int columns() const
+    {
+        return C;
+    }
+
+    Piece piece(int x, int y) const
+    {
+        return mPieces[x][y];
+    }
+
+    void setPiece(int x, int y, Piece piece)
+    {
+        mPieces[x][y] = piece;
+    }
 
 private:
-    size_t mSize;
-    std::vector<std::vector<Piece>> mPieces;
+    std::array<std::array<Piece, R>, C> mPieces;
 };
+

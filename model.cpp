@@ -68,7 +68,7 @@ void Model::selectSquare(int x, int y)
         auto sideToMove = mGame.sideToMove();
         auto board = mGame.getBoard();
 
-        if(x < board.size() && y < board.size())
+        if(x < board.rows() && y < board.columns())
         {
             auto piece = board.piece(x, y);
 

@@ -1,7 +1,6 @@
 #include "game.h"
 
 Game::Game():
-    mBoard(8),
     mEnPassantX(-1),
     mUndoCount(0)
 {
@@ -52,7 +51,6 @@ void Game::doMove(Move const& move)
 void Game::undoMove()
 {
     auto index = (mMoves.size() - 1) - mUndoCount;
-    Q_ASSERT(index >= 0);
     Q_ASSERT(index < mMoves.size());
 
     auto move = mMoves[index];
@@ -121,7 +119,7 @@ void Game::newGame()
     emit piecesReset();
 }
 
-Board Game::getBoard() const
+Board<8, 8> Game::getBoard() const
 {
     return mBoard;
 }
@@ -145,7 +143,7 @@ std::vector<Move> Game::getLegalMoves(int x, int y) const
             {
                 moves.emplace_back(x, y, x, y-1);
 
-                if(y == mBoard.size() - 2)
+                if(y == mBoard.rows() - 2)
                 {
                     if(mBoard.piece(x, y-2) == Piece::ENone)
                     {
@@ -160,7 +158,7 @@ std::vector<Move> Game::getLegalMoves(int x, int y) const
                     moves.emplace_back(x, y, x-1, y-1, mBoard.piece(x-1, y-1));
                 }
             }
-            if(x < mBoard.size() - 1)
+            if(x < mBoard.columns() - 1)
             {
                 if(PieceUtils::isBlack(mBoard.piece(x+1, y-1)))
                 {
@@ -189,7 +187,7 @@ std::vector<Move> Game::getLegalMoves(int x, int y) const
     }
     else if(piece == Piece::EBlackPawn && sideToMove() == Color::EBlack)
     {
-        if(y + 1 < mBoard.size())
+        if(y + 1 < mBoard.rows())
         {
             if(mBoard.piece(x, y+1) == Piece::ENone)
             {
@@ -210,7 +208,7 @@ std::vector<Move> Game::getLegalMoves(int x, int y) const
                     moves.emplace_back(x, y, x-1, y+1, mBoard.piece(x-1, y+1));
                 }
             }
-            if(x < mBoard.size() - 1)
+            if(x < mBoard.columns() - 1)
             {
                 if(PieceUtils::isWhite(mBoard.piece(x+1, y+1)))
                 {
@@ -221,7 +219,7 @@ std::vector<Move> Game::getLegalMoves(int x, int y) const
             auto enpassantAvailable = mEnPassantX >= 0;
             if(enpassantAvailable)
             {
-                if(y == mBoard.size() - 4)
+                if(y == mBoard.rows() - 4)
                 {
                     if(x+1 == mEnPassantX)
                     {
@@ -241,7 +239,7 @@ std::vector<Move> Game::getLegalMoves(int x, int y) const
 
 void Game::resetPieces()
 {
-    mBoard = Board(8);
+    mBoard = Board<8, 8>();
 
     mBoard.setPiece(0, 6, Piece::EWhitePawn);
     mBoard.setPiece(1, 6, Piece::EWhitePawn);

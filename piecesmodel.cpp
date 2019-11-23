@@ -107,9 +107,9 @@ void PiecesModel::onPiecesReset()
 
     auto board = mGame.getBoard();
 
-    for(auto i=0; i<board.size(); i++)
+    for(auto i=0; i<board.columns(); i++)
     {
-        for(auto j=0; j<board.size(); ++j)
+        for(auto j=0; j<board.rows(); ++j)
         {
             auto const& piece = board.piece(i, j);
 

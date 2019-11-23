@@ -18,8 +18,7 @@ SOURCES += \
     piecesmodel.cpp \
     game.cpp \
     model.cpp \
-    piece.cpp \
-    board.cpp
+    piece.cpp
 
 RESOURCES += qml.qrc
 

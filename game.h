@@ -20,9 +20,7 @@ public:
     void redoMove();
     void newGame();
 
-
-
-    Board getBoard() const;
+    Board<8, 8> getBoard() const;
     std::vector<Move> getMovesPlayed() const;
     std::vector<Move> getLegalMoves(int x, int y) const;
     Color sideToMove() const;
@@ -37,7 +35,7 @@ signals:
 private:
     void resetPieces();
 
-    Board mBoard;
+    Board<8, 8> mBoard;
     std::vector<Move> mMoves;
     int mEnPassantX;
     size_t mUndoCount;
