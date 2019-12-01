@@ -57,7 +57,7 @@ void Model::selectSquare(int x, int y)
 
     if(iter != legalMoves.end())
     {
-        mGame.doMove(*iter);
+        mGame.playMove(*iter);
         emit gameStateChanged();
 
         mSelected = {-1, -1};
@@ -128,10 +128,10 @@ bool Model::newGameAvailable() const
 
 bool Model::undoMoveAvailable() const
 {
-    return mGame.undoCount() < mGame.getMovesPlayed().size();
+    return mGame.getMovesPlayed().size() > 0;
 }
 
 bool Model::redoMoveAvailable() const
 {
-    return mGame.undoCount() > 0;
+    return mGame.getMovesUndone().size() > 0;
 }

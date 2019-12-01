@@ -15,16 +15,16 @@ class Game : public QObject
 public:
     Game();
 
-    void doMove(Move const& move);
+    void playMove(Move const& move);
     void undoMove();
     void redoMove();
     void newGame();
 
     Board<8, 8> getBoard() const;
     std::vector<Move> getMovesPlayed() const;
+    std::vector<Move> getMovesUndone() const;
     std::vector<Move> getLegalMoves(int x, int y) const;
     Color sideToMove() const;
-    size_t undoCount() const;
 
 signals:
     void pieceMoved(int originX, int originY, int destinationX, int destinationY);
@@ -33,10 +33,10 @@ signals:
     void piecesReset();
 
 private:
+    void doMove(Move const& move);
     void resetPieces();
 
     Board<8, 8> mBoard;
     std::vector<Move> mMoves;
-    int mEnPassantX;
-    size_t mUndoCount;
+    std::vector<Move> mMovesUndone;
 };

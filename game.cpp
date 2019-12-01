@@ -1,122 +1,65 @@
 #include "game.h"
 
-Game::Game():
-    mEnPassantX(-1),
-    mUndoCount(0)
+Game::Game()
 {
     resetPieces();
 }
 
-void Game::doMove(Move const& move)
+void Game::playMove(Move const& move)
 {
-    mEnPassantX = -1;
+    mMovesUndone.clear();
 
-    while(mUndoCount > 0)
-    {
-        mMoves.pop_back();
-        --mUndoCount;
-    }
-    mMoves.push_back(move);
-
-    auto piece = mBoard.piece(move.mOriginX, move.mOriginY);
-    auto captured = mBoard.piece(move.mDestinationX, move.mDestinationY);
-
-    auto pawnMove = (piece == Piece::EWhitePawn) || (piece == Piece::EBlackPawn);
-    if(pawnMove)
-    {
-        auto pawnAdvancingTwoSquares = std::abs(move.mOriginY - move.mDestinationY) > 1;
-        if(pawnAdvancingTwoSquares)
-        {
-            mEnPassantX = move.mDestinationX;
-        }
-
-        auto enPassant = (move.mDestinationX != move.mOriginX) && (captured == Piece::ENone);
-        if(enPassant)
-        {
-            mBoard.setPiece(move.mDestinationX, move.mOriginY, Piece::ENone);
-            emit pieceRemoved(move.mDestinationX, move.mOriginY);
-        }
-    }
-
-    if(captured != Piece::ENone)
-    {
-        emit pieceRemoved(move.mDestinationX, move.mDestinationY);
-    }
-
-    mBoard.setPiece(move.mDestinationX, move.mDestinationY, piece);
-    mBoard.setPiece(move.mOriginX, move.mOriginY, Piece::ENone);
-    emit pieceMoved(move.mOriginX, move.mOriginY, move.mDestinationX, move.mDestinationY);
+    doMove(move);
 }
 
 void Game::undoMove()
 {
-    auto index = (mMoves.size() - 1) - mUndoCount;
-    Q_ASSERT(index < mMoves.size());
-
-    auto move = mMoves[index];
-
-    auto piece = mBoard.piece(move.mDestinationX, move.mDestinationY);
-    auto captured = move.mCaptured;
-
-    mBoard.setPiece(move.mDestinationX, move.mDestinationY, captured);
-    mBoard.setPiece(move.mOriginX, move.mOriginY, piece);
-
-    emit pieceMoved(move.mDestinationX, move.mDestinationY, move.mOriginX, move.mOriginY);
-    if(captured != Piece::ENone)
+    if(mMoves.size() > 0)
     {
-        emit pieceAdded(move.mDestinationX, move.mDestinationY, captured);
-    }
+        auto move = mMoves.back();
+        mMoves.pop_back();
 
-    ++mUndoCount;
+        auto piece = mBoard.piece(move.mDestinationX, move.mDestinationY);
+        auto captured = move.mCaptured;
+
+        mBoard.setPiece(move.mDestinationX, move.mDestinationY, captured);
+        mBoard.setPiece(move.mOriginX, move.mOriginY, piece);
+
+        emit pieceMoved(move.mDestinationX, move.mDestinationY, move.mOriginX, move.mOriginY);
+
+        if(captured != Piece::ENone)
+        {
+            emit pieceAdded(move.mDestinationX, move.mDestinationY, captured);
+        }
+
+        mMovesUndone.emplace_back(move);
+    }
+    else
+    {
+        Q_ASSERT(false);
+    }
 }
 
 void Game::redoMove()
 {
-    auto index = mMoves.size() - mUndoCount;
-
-    Q_ASSERT(index < mMoves.size());
-
-    auto move = mMoves[index];
-    auto piece = mBoard.piece(move.mOriginX, move.mOriginY);
-    auto captured = mBoard.piece(move.mDestinationX, move.mDestinationY);
-
-    auto pawnMove = (piece == Piece::EWhitePawn) || (piece == Piece::EBlackPawn);
-    if(pawnMove)
+    if(mMovesUndone.size() > 0)
     {
-        auto pawnAdvancingTwoSquares = std::abs(move.mOriginY - move.mDestinationY) > 1;
-        if(pawnAdvancingTwoSquares)
-        {
-            mEnPassantX = move.mDestinationX;
-        }
+        doMove(mMovesUndone.back());
 
-        auto enPassant = (move.mDestinationX != move.mOriginX) && (captured == Piece::ENone);
-        if(enPassant)
-        {
-            mBoard.setPiece(move.mDestinationX, move.mOriginY, Piece::ENone);
-            emit pieceRemoved(move.mDestinationX, move.mOriginY);
-        }
+        mMovesUndone.pop_back();
     }
-
-    if(captured != Piece::ENone)
+    else
     {
-        emit pieceRemoved(move.mDestinationX, move.mDestinationY);
+        Q_ASSERT(false);
     }
-
-    mBoard.setPiece(move.mDestinationX, move.mDestinationY, piece);
-    mBoard.setPiece(move.mOriginX, move.mOriginY, Piece::ENone);
-    emit pieceMoved(move.mOriginX, move.mOriginY, move.mDestinationX, move.mDestinationY);
-
-    --mUndoCount;
 }
 
 void Game::newGame()
 {
     mMoves.clear();
-    mUndoCount = 0;
+    mMovesUndone.clear();
 
     resetPieces();
-
-    emit piecesReset();
 }
 
 Board<8, 8> Game::getBoard() const
@@ -127,6 +70,11 @@ Board<8, 8> Game::getBoard() const
 std::vector<Move> Game::getMovesPlayed() const
 {
     return mMoves;
+}
+
+std::vector<Move> Game::getMovesUndone() const
+{
+    return mMovesUndone;
 }
 
 std::vector<Move> Game::getLegalMoves(int x, int y) const
@@ -157,6 +105,17 @@ std::vector<Move> Game::getLegalMoves(int x, int y) const
                 {
                     moves.emplace_back(x, y, x-1, y-1, mBoard.piece(x-1, y-1));
                 }
+
+                auto canTakeEp = y == 3
+                                && (mBoard.piece(x-1, y) == Piece::EBlackPawn)
+                                && (mMoves.back().mDestinationX == x-1)
+                                && (mMoves.back().mDestinationY == y)
+                                && (mMoves.back().mOriginX == x-1)
+                                && (mMoves.back().mOriginY == y-2);
+                if(canTakeEp)
+                {
+                    moves.emplace_back(x, y, x-1, y-1, Piece::EBlackPawn);
+                }
             }
             if(x < mBoard.columns() - 1)
             {
@@ -164,26 +123,19 @@ std::vector<Move> Game::getLegalMoves(int x, int y) const
                 {
                     moves.emplace_back(x, y, x+1, y-1, mBoard.piece(x+1, y-1));
                 }
-            }
 
-            auto enpassantAvailable = mEnPassantX >= 0;
-            if(enpassantAvailable)
-            {
-                if(y == 3)
+                auto canTakeEp = y == 3
+                                && (mBoard.piece(x+1, y) == Piece::EBlackPawn)
+                                && (mMoves.back().mDestinationX == x+1)
+                                && (mMoves.back().mDestinationY == y)
+                                && (mMoves.back().mOriginX == x+1)
+                                && (mMoves.back().mOriginY == y-2);
+                if(canTakeEp)
                 {
-                    if(x+1 == mEnPassantX)
-                    {
-                        moves.emplace_back(x, y, x+1, y-1, Piece::EBlackPawn);
-                    }
-                    else if(x-1 == mEnPassantX)
-                    {
-                        moves.emplace_back(x, y, x-1, y-1, Piece::EBlackPawn);
-                    }
+                    moves.emplace_back(x, y, x+1, y-1, Piece::EBlackPawn);
                 }
             }
         }
-
-
     }
     else if(piece == Piece::EBlackPawn && sideToMove() == Color::EBlack)
     {
@@ -207,6 +159,17 @@ std::vector<Move> Game::getLegalMoves(int x, int y) const
                 {
                     moves.emplace_back(x, y, x-1, y+1, mBoard.piece(x-1, y+1));
                 }
+
+                auto canTakeEp = y == mBoard.rows() - 4
+                                && (mBoard.piece(x-1, y) == Piece::EWhitePawn)
+                                && (mMoves.back().mDestinationX == x-1)
+                                && (mMoves.back().mDestinationY == y)
+                                && (mMoves.back().mOriginX == x-1)
+                                && (mMoves.back().mOriginY == y+2);
+                if(canTakeEp)
+                {
+                    moves.emplace_back(x, y, x-1, y+1, Piece::EWhitePawn);
+                }
             }
             if(x < mBoard.columns() - 1)
             {
@@ -214,27 +177,54 @@ std::vector<Move> Game::getLegalMoves(int x, int y) const
                 {
                     moves.emplace_back(x, y, x+1, y+1, mBoard.piece(x+1, y+1));
                 }
-            }
 
-            auto enpassantAvailable = mEnPassantX >= 0;
-            if(enpassantAvailable)
-            {
-                if(y == mBoard.rows() - 4)
+                auto canTakeEp = y == mBoard.rows() - 4
+                                && (mBoard.piece(x+1, y) == Piece::EWhitePawn)
+                                && (mMoves.back().mDestinationX == x+1)
+                                && (mMoves.back().mDestinationY == y)
+                                && (mMoves.back().mOriginX == x+1)
+                                && (mMoves.back().mOriginY == y+2);
+                if(canTakeEp)
                 {
-                    if(x+1 == mEnPassantX)
-                    {
-                        moves.emplace_back(x, y, x+1, y+1, Piece::EWhitePawn);
-                    }
-                    else if(x-1 == mEnPassantX)
-                    {
-                        moves.emplace_back(x, y, x-1, y+1, Piece::EWhitePawn);
-                    }
+                    moves.emplace_back(x, y, x+1, y+1, Piece::EWhitePawn);
                 }
             }
         }
     }
 
     return moves;
+}
+
+Color Game::sideToMove() const
+{
+    return (mMoves.size() % 2 == 0) ? Color::EWhite : Color::EBlack;
+}
+
+void Game::doMove(Move const& move)
+{
+    mMoves.push_back(move);
+    auto piece = mBoard.piece(move.mOriginX, move.mOriginY);
+    auto captured = mBoard.piece(move.mDestinationX, move.mDestinationY);
+
+    auto pawnMove = (piece == Piece::EWhitePawn) || (piece == Piece::EBlackPawn);
+    if(pawnMove)
+    {
+        auto enPassant = (move.mDestinationX != move.mOriginX) && (captured == Piece::ENone);
+        if(enPassant)
+        {
+            mBoard.setPiece(move.mDestinationX, move.mOriginY, Piece::ENone);
+            emit pieceRemoved(move.mDestinationX, move.mOriginY);
+        }
+    }
+
+    if(captured != Piece::ENone)
+    {
+        emit pieceRemoved(move.mDestinationX, move.mDestinationY);
+    }
+
+    mBoard.setPiece(move.mDestinationX, move.mDestinationY, piece);
+    mBoard.setPiece(move.mOriginX, move.mOriginY, Piece::ENone);
+    emit pieceMoved(move.mOriginX, move.mOriginY, move.mDestinationX, move.mDestinationY);
 }
 
 void Game::resetPieces()
@@ -258,14 +248,7 @@ void Game::resetPieces()
     mBoard.setPiece(5, 1, Piece::EBlackPawn);
     mBoard.setPiece(6, 1, Piece::EBlackPawn);
     mBoard.setPiece(7, 1, Piece::EBlackPawn);
+
+    emit piecesReset();
 }
 
-Color Game::sideToMove() const
-{
-    return ((mMoves.size() - mUndoCount) % 2 == 0) ? Color::EWhite : Color::EBlack;
-}
-
-size_t Game::undoCount() const
-{
-    return mUndoCount;
-}
