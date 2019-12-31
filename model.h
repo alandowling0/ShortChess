@@ -6,6 +6,7 @@
 #include <memory>
 #include "piecesmodel.h"
 #include "game.h"
+#include "board.h"
 
 class Model : public QObject
 {
@@ -39,6 +40,7 @@ signals:
     void gameStateChanged();
 
 private:
+    Board mBoard;
     Game mGame;
     std::unique_ptr<PiecesModel> mPiecesModel;
     QPair<int, int> mSelected;

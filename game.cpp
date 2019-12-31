@@ -1,6 +1,7 @@
 #include "game.h"
 
-Game::Game()
+Game::Game(Board& board) :
+    mBoard(board)
 {
     resetPieces();
 }
@@ -19,10 +20,7 @@ void Game::undoMove()
         auto move = mMoves.back();
         mMoves.pop_back();
 
-        auto piece = move.piece();
-        mBoard.setPiece(move.origin(), piece);
-        mBoard.setPiece(move.destination(), Piece::ENone);
-        emit pieceMoved(move.destination().x(), move.destination().y(), move.origin().x(), move.origin().y());
+        mBoard.movePiece(move.destination(), move.origin());
 
         auto captured = move.captured();
         if(captured != Piece::ENone)
@@ -36,7 +34,6 @@ void Game::undoMove()
             }
 
             mBoard.setPiece(Square{capturedPieceX, capturedPieceY}, captured);
-            emit pieceAdded(capturedPieceX, capturedPieceY, captured);
         }
 
         mMovesUndone.emplace_back(move);
@@ -67,11 +64,6 @@ void Game::newGame()
     mMovesUndone.clear();
 
     resetPieces();
-}
-
-Board<8, 8> Game::getBoard() const
-{
-    return mBoard;
 }
 
 std::vector<Move> Game::getMovesPlayed() const
@@ -111,45 +103,42 @@ void Game::doMove(Move const& move)
     mMoves.push_back(move);
 
     // remove the piece being captured if any
-    if(move.enPassant())
+    if(move.captured() != Piece::ENone)
     {
-        mBoard.setPiece(Square{move.destination().x(), move.origin().y()}, Piece::ENone);
-        emit pieceRemoved(move.destination().x(), move.origin().y());
-    }
-    else if(move.captured() != Piece::ENone)
-    {
-        emit pieceRemoved(move.destination().x(), move.destination().y());
+        auto capturedSquare = move.destination();
+        if(move.enPassant())
+        {
+            capturedSquare = Square{move.destination().x(), move.origin().y()};
+        }
+
+        mBoard.setPiece(capturedSquare, Piece::ENone);
     }
 
     // move the piece being moved
-    mBoard.setPiece(move.origin(), Piece::ENone);
-    mBoard.setPiece(move.destination(), move.piece());
-    emit pieceMoved(move.origin().x(), move.origin().y(), move.destination().x(), move.destination().y());
+    mBoard.movePiece(move.origin(), move.destination());
 }
 
 void Game::resetPieces()
 {
-    mBoard = Board<8, 8>();
+    mBoard.clear();
 
-    mBoard.setPiece(0, 6, Piece::EWhitePawn);
-    mBoard.setPiece(1, 6, Piece::EWhitePawn);
-    mBoard.setPiece(2, 6, Piece::EWhitePawn);
-    mBoard.setPiece(3, 6, Piece::EWhitePawn);
-    mBoard.setPiece(4, 6, Piece::EWhitePawn);
-    mBoard.setPiece(5, 6, Piece::EWhitePawn);
-    mBoard.setPiece(6, 6, Piece::EWhitePawn);
-    mBoard.setPiece(7, 6, Piece::EWhitePawn);
+    mBoard.setPiece(Square{0, 6}, Piece::EWhitePawn);
+    mBoard.setPiece(Square{1, 6}, Piece::EWhitePawn);
+    mBoard.setPiece(Square{2, 6}, Piece::EWhitePawn);
+    mBoard.setPiece(Square{3, 6}, Piece::EWhitePawn);
+    mBoard.setPiece(Square{4, 6}, Piece::EWhitePawn);
+    mBoard.setPiece(Square{5, 6}, Piece::EWhitePawn);
+    mBoard.setPiece(Square{6, 6}, Piece::EWhitePawn);
+    mBoard.setPiece(Square{7, 6}, Piece::EWhitePawn);
 
-    mBoard.setPiece(0, 1, Piece::EBlackPawn);
-    mBoard.setPiece(1, 1, Piece::EBlackPawn);
-    mBoard.setPiece(2, 1, Piece::EBlackPawn);
-    mBoard.setPiece(3, 1, Piece::EBlackPawn);
-    mBoard.setPiece(4, 1, Piece::EBlackPawn);
-    mBoard.setPiece(5, 1, Piece::EBlackPawn);
-    mBoard.setPiece(6, 1, Piece::EBlackPawn);
-    mBoard.setPiece(7, 1, Piece::EBlackPawn);
-
-    emit piecesReset();
+    mBoard.setPiece(Square{0, 1}, Piece::EBlackPawn);
+    mBoard.setPiece(Square{1, 1}, Piece::EBlackPawn);
+    mBoard.setPiece(Square{2, 1}, Piece::EBlackPawn);
+    mBoard.setPiece(Square{3, 1}, Piece::EBlackPawn);
+    mBoard.setPiece(Square{4, 1}, Piece::EBlackPawn);
+    mBoard.setPiece(Square{5, 1}, Piece::EBlackPawn);
+    mBoard.setPiece(Square{6, 1}, Piece::EBlackPawn);
+    mBoard.setPiece(Square{7, 1}, Piece::EBlackPawn);
 }
 
 std::vector<Move> Game::getPawnMoves(Square const& origin) const
@@ -163,13 +152,13 @@ std::vector<Move> Game::getPawnMoves(Square const& origin) const
     getPawnMovesForward(origin, yDelta, moves);
 
     auto squareForwardLeft = Square{origin.x() + yDelta, origin.y() + yDelta};
-    if(mBoard.isValid(squareForwardLeft))
+    if(mBoard.isValidSquare(squareForwardLeft))
     {
         getPawnCaptures(origin, squareForwardLeft, moves);
     }
 
     auto squareForwardRight = Square{origin.x() - yDelta, origin.y() + yDelta};
-    if(mBoard.isValid(squareForwardRight))
+    if(mBoard.isValidSquare(squareForwardRight))
     {
         getPawnCaptures(origin, squareForwardRight, moves);
     }
@@ -181,7 +170,7 @@ void Game::getPawnMovesForward(Square const& origin, int yDelta, std::vector<Mov
 {
     auto destination = Square{origin.x(), origin.y() + yDelta};
 
-    if(mBoard.isValid(destination))
+    if(mBoard.isValidSquare(destination))
     {
         if(mBoard.piece(destination) == Piece::ENone)
         {
@@ -189,14 +178,14 @@ void Game::getPawnMovesForward(Square const& origin, int yDelta, std::vector<Mov
 
             moves.emplace_back(origin, destination, piece);
 
-            auto onStartSquare = !mBoard.isValid(Square{origin.x(), origin.y() - (yDelta*2)});
+            auto onStartSquare = !mBoard.isValidSquare(Square{origin.x(), origin.y() - (yDelta*2)});
 
             if(onStartSquare)
             {
                 auto squareForwardTwo = Square{origin.x(), origin.y() + (yDelta*2)};
 
                 auto canMoveForwardTwo =
-                    mBoard.isValid(squareForwardTwo) &&
+                    mBoard.isValidSquare(squareForwardTwo) &&
                     mBoard.piece(squareForwardTwo) == Piece::ENone;
 
                 if(canMoveForwardTwo)

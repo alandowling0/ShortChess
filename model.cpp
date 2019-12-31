@@ -1,7 +1,8 @@
 #include "model.h"
 
 Model::Model() :
-    mPiecesModel(std::make_unique<PiecesModel>(mGame)),
+    mGame(mBoard),
+    mPiecesModel(std::make_unique<PiecesModel>(mBoard)),
     mSelected{-1, -1}
 {
 }
@@ -66,11 +67,10 @@ void Model::selectSquare(int x, int y)
     else
     {
         auto sideToMove = mGame.sideToMove();
-        auto board = mGame.getBoard();
 
-        if(x < board.rows() && y < board.columns())
+        if(x < mBoard.rows() && y < mBoard.columns())
         {
-            auto piece = board.piece(x, y);
+            auto piece = mBoard.piece(Square{x, y});
 
             auto selectable = (PieceUtils::isWhite(piece) && sideToMove == Color::EWhite) ||
                                 (PieceUtils::isBlack(piece) && sideToMove == Color::EBlack);

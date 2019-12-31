@@ -1,74 +1,50 @@
 #pragma once
 
-#include <array>
-#include <QtGlobal>
+#include <QObject>
 #include "piece.h"
 #include "square.h"
+#include <vector>
 
-template <int R, int C>
-class Board
+class Board : public QObject
 {
+    Q_OBJECT
+
+    struct PieceInfo
+    {
+        PieceInfo(int x, int y, Piece piece) :
+            mX(x),
+            mY(y),
+            mPiece(piece)
+        {
+        }
+
+        int mX;
+        int mY;
+        Piece mPiece;
+    };
+
 public:
-    Board()
-    {
-        for(auto & row : mPieces)
-        {
-            for(auto & piece : row)
-            {
-                piece = Piece::ENone;
-            }
-        }
-    }
+    int rows() const;
+    int columns() const;
+    bool isValidSquare(Square const& square) const;
+    Piece piece(Square const& square) const;
+    PieceInfo pieceInfo(int index) const;
+    int numOfPieces() const;
 
-    int rows() const
-    {
-        return R;
-    }
+    void setPiece(Square const& square, Piece piece);
+    void movePiece(Square const& origin, Square const& destination);
+    void clear();
 
-    int columns() const
-    {
-        return C;
-    }
-
-    Piece piece(int x, int y) const
-    {
-        return mPieces[x][y];
-    }
-
-    void setPiece(int x, int y, Piece piece)
-    {
-        mPieces[x][y] = piece;
-    }
-
-    Piece piece(Square square) const
-    {
-        if(isValid(square))
-        {
-            return mPieces[square.x()][square.y()];
-        }
-        else
-        {
-            Q_ASSERT(false);
-            return Piece::ENone;
-        }
-    }
-
-    void setPiece(Square square, Piece piece)
-    {
-        mPieces[square.x()][square.y()] = piece;
-    }
-
-    bool isValid(Square const& square) const
-    {
-        auto xValid = square.x() >= 0 && square.x() < C;
-        auto yValid = square.y() >= 0 && square.y() < R;
-
-        return xValid && yValid;
-    }
+signals:
+    void pieceAdded(int index);
+    void pieceRemoved(int index);
+    void pieceMoved(int index);
+    void cleared();
 
 private:
-    std::array<std::array<Piece, R>, C> mPieces;
+    void addPiece(Square const& square, Piece piece);
+    void removePiece(Square const& square);
+
+    std::vector<PieceInfo> mPieces;
 };
-
-
 
