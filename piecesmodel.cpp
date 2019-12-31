@@ -86,8 +86,13 @@ QString PiecesModel::image(Piece piece) const
     {
     case Piece::EWhitePawn:
         return "WhitePawn";
+    case Piece::EWhiteKing:
+        return "WhiteKing";
     case Piece::EBlackPawn:
         return "BlackPawn";
+    case Piece::EBlackKing:
+        return "BlackKing";
+
     default:
         return QString();
     }

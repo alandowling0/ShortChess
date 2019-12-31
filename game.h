@@ -34,6 +34,8 @@ private:
     void getPawnMovesForward(Square const& origin, int yDelta, std::vector<Move>& moves) const;
     void getPawnCaptures(Square const& origin, Square const& destination, std::vector<Move>& moves) const;
 
+    std::vector<Move> getKingMoves(Square const& origin) const;
+
     Board& mBoard;
     std::vector<Move> mMoves;
     std::vector<Move> mMovesUndone;

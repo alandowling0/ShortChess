@@ -86,6 +86,10 @@ std::vector<Move> Game::getLegalMoves(Square const& origin) const
     case Piece::EBlackPawn:
         moves = getPawnMoves(origin);
         break;
+    case Piece::EWhiteKing:
+    case Piece::EBlackKing:
+        moves = getKingMoves(origin);
+        break;
     default:
         Q_ASSERT(false);
     }
@@ -131,6 +135,8 @@ void Game::resetPieces()
     mBoard.setPiece(Square{6, 6}, Piece::EWhitePawn);
     mBoard.setPiece(Square{7, 6}, Piece::EWhitePawn);
 
+    mBoard.setPiece(Square{4, 7}, Piece::EWhiteKing);
+
     mBoard.setPiece(Square{0, 1}, Piece::EBlackPawn);
     mBoard.setPiece(Square{1, 1}, Piece::EBlackPawn);
     mBoard.setPiece(Square{2, 1}, Piece::EBlackPawn);
@@ -139,6 +145,8 @@ void Game::resetPieces()
     mBoard.setPiece(Square{5, 1}, Piece::EBlackPawn);
     mBoard.setPiece(Square{6, 1}, Piece::EBlackPawn);
     mBoard.setPiece(Square{7, 1}, Piece::EBlackPawn);
+
+    mBoard.setPiece(Square{4, 0}, Piece::EBlackKing);
 }
 
 std::vector<Move> Game::getPawnMoves(Square const& origin) const
@@ -230,5 +238,39 @@ void Game::getPawnCaptures(Square const& origin, Square const& destination, std:
             moves.emplace_back(origin, destination, piece, previousMove.piece(), true);
         }
     }
+}
+
+std::vector<Move> Game::getKingMoves(const Square &origin) const
+{
+    std::vector<Move> moves;
+
+    for(auto dX = -1; dX <= 1; ++dX)
+    {
+        for(auto dY = -1; dY <= 1; ++dY)
+        {
+            if(dX == 0 && dY == 0)
+            {
+                continue;
+            }
+
+            auto destination = Square{origin.x() + dX, origin.y() + dY};
+
+            if(mBoard.isValidSquare(destination))
+            {
+                auto piece = mBoard.piece(origin);
+                auto destinationPiece = mBoard.piece(destination);
+
+                auto canMove = destinationPiece == Piece::ENone;
+                auto canCapture = (PieceUtils::isWhite(piece) != PieceUtils::isWhite(destinationPiece));
+
+                if(canMove || canCapture)
+                {
+                    moves.emplace_back(origin, destination, piece, destinationPiece);
+                }
+            }
+        }
+    }
+
+    return moves;
 }
 
