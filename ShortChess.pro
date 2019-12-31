@@ -15,10 +15,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
+    move.cpp \
     piecesmodel.cpp \
     game.cpp \
     model.cpp \
-    piece.cpp
+    piece.cpp \
+    square.cpp
 
 RESOURCES += qml.qrc
 
@@ -34,13 +36,14 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
+    move.h \
     piecesmodel.h \
     game.h \
     model.h \
     piece.h \
     color.h \
-    move.h \
-    board.h
+    board.h \
+    square.h
 
 DISTFILES += \
     diagram.qmodel

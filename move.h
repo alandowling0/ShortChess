@@ -1,31 +1,29 @@
 #pragma once
 
+#include "square.h"
 #include "piece.h"
 
 class Move
 {
 public:
-    Move(int originX, int originY, int destinationX, int destinationY) :
-        mOriginX(originX),
-        mOriginY(originY),
-        mDestinationX(destinationX),
-        mDestinationY(destinationY),
-        mCaptured(Piece::ENone)
-    {
-    }
+    Move(Square origin, Square destination, Piece piece);
+    Move(Square origin, Square destination, Piece piece, Piece captured);
+    Move(Square origin, Square destination, Piece piece, Piece captured, bool enPassant);
+    Move(Square origin, Square destination, Piece piece, Piece captured, Piece promotionChoice);
 
-    Move(int originX, int originY, int destinationX, int destinationY, Piece captured) :
-        mOriginX(originX),
-        mOriginY(originY),
-        mDestinationX(destinationX),
-        mDestinationY(destinationY),
-        mCaptured(captured)
-    {
-    }
+    Square origin() const;
+    Square destination() const;
+    Piece piece() const;
+    Piece captured() const;
+    bool enPassant() const;
+    Piece promotionChoice() const;
 
-    int mOriginX;
-    int mOriginY;
-    int mDestinationX;
-    int mDestinationY;
+private:
+    Square mOrigin;
+    Square mDestination;
+    Piece mPiece;
     Piece mCaptured;
+    bool mEnPassant;
+    Piece mPromotionChoice;
 };
+

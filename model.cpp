@@ -49,10 +49,10 @@ void Model::selectSquare(int x, int y)
     std::vector<Move> legalMoves;
     if(squareSelected)
     {
-        legalMoves = mGame.getLegalMoves(mSelected.first, mSelected.second);
+        legalMoves = mGame.getLegalMoves(Square(mSelected.first, mSelected.second));
     }
     auto iter = std::find_if(legalMoves.begin(), legalMoves.end(), [x, y](auto move){
-        return move.mDestinationX == x && move.mDestinationY == y;
+        return move.destination().x() == x && move.destination().y() == y;
     });
 
     if(iter != legalMoves.end())
@@ -79,12 +79,12 @@ void Model::selectSquare(int x, int y)
             {
                 mSelected = {x, y};
 
-                auto moves = mGame.getLegalMoves(x, y);
+                auto moves = mGame.getLegalMoves(Square(x, y));
 
                 mHighlighted.clear();
                 for(auto const& m : moves)
                 {
-                    mHighlighted.insert({m.mDestinationX, m.mDestinationY});
+                    mHighlighted.insert({m.destination().x(), m.destination().y()});
                 }
             }
             else
