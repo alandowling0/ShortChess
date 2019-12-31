@@ -42,7 +42,8 @@ signals:
 private:
     Board mBoard;
     Game mGame;
+
     std::unique_ptr<PiecesModel> mPiecesModel;
-    QPair<int, int> mSelected;
-    QSet<QPair<int, int>> mHighlighted;
+    Square mSelected;
+    QSet<Square> mHighlighted;
 };

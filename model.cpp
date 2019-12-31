@@ -45,12 +45,12 @@ void Model::redoMove()
 
 void Model::selectSquare(int x, int y)
 {
-    auto squareSelected = mSelected.first >= 0 && mSelected.second >= 0;
+    auto squareSelected = mBoard.isValidSquare(mSelected);
 
     std::vector<Move> legalMoves;
     if(squareSelected)
     {
-        legalMoves = mGame.getLegalMoves(Square(mSelected.first, mSelected.second));
+        legalMoves = mGame.getLegalMoves(mSelected);
     }
     auto iter = std::find_if(legalMoves.begin(), legalMoves.end(), [x, y](auto move){
         return move.destination().x() == x && move.destination().y() == y;
@@ -84,7 +84,7 @@ void Model::selectSquare(int x, int y)
                 mHighlighted.clear();
                 for(auto const& m : moves)
                 {
-                    mHighlighted.insert({m.destination().x(), m.destination().y()});
+                    mHighlighted.insert(m.destination());
                 }
             }
             else
@@ -106,7 +106,7 @@ QVariant Model::piecesModel() const
 
 QVariantMap Model::selected() const
 {
-    return QVariantMap{{"x", mSelected.first}, {"y", mSelected.second}};
+    return QVariantMap{{"x", mSelected.x()}, {"y", mSelected.y()}};
 }
 
 QVariantList Model::highlighted() const
@@ -115,7 +115,7 @@ QVariantList Model::highlighted() const
 
     for(auto const& h : mHighlighted)
     {
-        highlighted.push_back(QVariantMap{{"x", h.first}, {"y", h.second}});
+        highlighted.push_back(QVariantMap{{"x", h.x()}, {"y", h.y()}});
     }
 
     return highlighted;
