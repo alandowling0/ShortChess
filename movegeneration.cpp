@@ -4,9 +4,11 @@
 namespace
 {
     std::vector<Move> getKingMoves(Position const& position, Square const& origin);
+    std::vector<Move> getRookMoves(Position const& position, Square const& origin);
     std::vector<Move> getPawnMoves(Position const& position, Square const& origin);
     void appendPawnMoves(Position const& position, Square const& origin, int yDelta, std::vector<Move>& moves);
     void appendPawnCapture(Position const& position, Square const& origin, Square const& destination, std::vector<Move> &moves);
+    std::vector<Move> getSlidingPieceMoves(Position const& position, Square const& origin, int dX, int dY);
 }
 
 std::vector<Move> MoveGeneration::getMoves(const Position &position)
@@ -46,6 +48,10 @@ std::vector<Move> MoveGeneration::getMoves(Position const& position, Square cons
     case Piece::EWhitePawn:
     case Piece::EBlackPawn:
         moves = getPawnMoves(position, square);
+        break;
+    case Piece::EWhiteRook:
+    case Piece::EBlackRook:
+        moves = getRookMoves(position, square);
         break;
     case Piece::EWhiteKing:
     case Piece::EBlackKing:
@@ -90,6 +96,25 @@ namespace
                 }
             }
         }
+
+        return moves;
+    }
+
+    std::vector<Move> getRookMoves(Position const& position, Square const& origin)
+    {
+        std::vector<Move> moves;
+
+        auto movesUp = getSlidingPieceMoves(position, origin, 0, -1);
+        moves.insert(moves.end(), movesUp.begin(), movesUp.end());
+
+        auto movesDown = getSlidingPieceMoves(position, origin, 0, 1);
+        moves.insert(moves.end(), movesDown.begin(), movesDown.end());
+
+        auto movesLeft = getSlidingPieceMoves(position, origin, -1, 0);
+        moves.insert(moves.end(), movesLeft.begin(), movesLeft.end());
+
+        auto movesRight = getSlidingPieceMoves(position, origin, 1, 0);
+        moves.insert(moves.end(), movesRight.begin(), movesRight.end());
 
         return moves;
     }
@@ -177,5 +202,42 @@ namespace
                 moves.emplace_back(origin, destination, piece, position.piece(enPassantSquare), true);
             }
         }
+    }
+
+    std::vector<Move> getSlidingPieceMoves(Position const& position, Square const& origin, int dX, int dY)
+    {
+        std::vector<Move> moves;
+
+        auto validDeltas = dX != 0 || dY != 0;
+
+        if(validDeltas)
+        {
+            auto destination = Square{origin.x() + dX, origin.y() + dY};
+
+            while(position.isValidSquare(destination))
+            {
+                auto pieceAtDestination = position.piece(destination);
+
+                if(PieceUtils::color(pieceAtDestination) != position.sideToMove())
+                {
+                    moves.emplace_back(origin, destination, position.piece(origin), pieceAtDestination);
+                }
+
+                if(pieceAtDestination == Piece::ENone)
+                {
+                    destination = Square{destination.x() + dX, destination.y() + dY};
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+        else
+        {
+            Q_ASSERT(false);
+        }
+
+        return moves;
     }
 }

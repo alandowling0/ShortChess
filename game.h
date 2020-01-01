@@ -9,10 +9,8 @@
 #include <vector>
 
 
-class Game : public QObject
+class Game
 {
-    Q_OBJECT
-
 public:
     Game(PiecesModel& piecesModel);
 

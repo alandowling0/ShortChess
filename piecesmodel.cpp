@@ -137,10 +137,14 @@ QString PiecesModel::image(Piece piece) const
     {
     case Piece::EWhitePawn:
         return "WhitePawn";
+    case Piece::EWhiteRook:
+        return "WhiteRook";
     case Piece::EWhiteKing:
         return "WhiteKing";
     case Piece::EBlackPawn:
         return "BlackPawn";
+    case Piece::EBlackRook:
+        return "BlackRook";
     case Piece::EBlackKing:
         return "BlackKing";
 
