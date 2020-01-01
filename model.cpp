@@ -1,8 +1,8 @@
 #include "model.h"
 
 Model::Model() :
-    mGame(mBoard),
-    mPiecesModel(std::make_unique<PiecesModel>(mBoard)),
+    mPiecesModel(std::make_unique<PiecesModel>()),
+    mGame(*mPiecesModel),
     mSelected{-1, -1}
 {
 }
@@ -14,7 +14,7 @@ void Model::clickSquare(int x, int y)
     // check if the square being clicked is a valid destination for the currently selected piece
     // if it is then play that move, otherwise update the currently selected piece and highlighted squares
     std::vector<Move> legalMoves;
-    if(mBoard.isValidSquare(mSelected))
+    if(mPiecesModel->piece(mSelected) != Piece::ENone)
     {
         legalMoves = mGame.getMoves(mSelected);
     }
@@ -34,30 +34,27 @@ void Model::clickSquare(int x, int y)
     {
         auto sideToMove = mGame.sideToMove();
 
-        if(mBoard.isValidSquare(squareClicked))
+        auto piece = mPiecesModel->piece(squareClicked);
+
+        auto selectable = (PieceUtils::isWhite(piece) && sideToMove == Color::EWhite) ||
+                            (PieceUtils::isBlack(piece) && sideToMove == Color::EBlack);
+
+        if(selectable)
         {
-            auto piece = mBoard.piece(squareClicked);
+            mSelected = squareClicked;
 
-            auto selectable = (PieceUtils::isWhite(piece) && sideToMove == Color::EWhite) ||
-                                (PieceUtils::isBlack(piece) && sideToMove == Color::EBlack);
+            auto moves = mGame.getMoves(mSelected);
 
-            if(selectable)
+            mHighlighted.clear();
+            for(auto const& m : moves)
             {
-                mSelected = squareClicked;
-
-                auto moves = mGame.getMoves(mSelected);
-
-                mHighlighted.clear();
-                for(auto const& m : moves)
-                {
-                    mHighlighted.insert(m.destination());
-                }
+                mHighlighted.insert(m.destination());
             }
-            else
-            {
-                mSelected = {-1, -1};
-                mHighlighted.clear();
-            }
+        }
+        else
+        {
+            mSelected = {-1, -1};
+            mHighlighted.clear();
         }
     }
 

@@ -1,6 +1,7 @@
 #pragma once
 
-#include "board.h"
+#include "piece.h"
+#include "square.h"
 
 #include <QAbstractListModel>
 #include <vector>
@@ -10,20 +11,34 @@ class PiecesModel : public QAbstractListModel
 {
     Q_OBJECT
 
-public:
-    PiecesModel(Board const& board);
+    struct PieceInfo
+    {
+        PieceInfo(int x, int y, Piece piece) :
+            mX(x),
+            mY(y),
+            mPiece(piece)
+        {
+        }
 
+        int mX;
+        int mY;
+        Piece mPiece;
+    };
+
+public:
     QHash<int, QByteArray> roleNames() const override;
     QVariant data(const QModelIndex & index, int role) const override;
     int rowCount(const QModelIndex & parent = QModelIndex()) const override;
 
-private slots:
-    void onPieceAdded(int index);
-    void onPieceRemoved(int index);
-    void onPieceMoved(int index);
-    void onCleared();
+    Piece piece(Square const& square) const;
+
+    void setPiece(Square const& square, Piece piece);
+    void movePiece(Square const& origin, Square const& destination);
+    void clear();
 
 private:
+    void addPiece(Square const& square, Piece piece);
+    void removePiece(Square const& square);
     QString image(Piece piece) const;
 
     enum PieceRole
@@ -33,5 +48,5 @@ private:
         Y
     };
 
-    Board const& mBoard;
+    std::vector<PieceInfo> mPieces;
 };

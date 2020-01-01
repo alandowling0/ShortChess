@@ -2,8 +2,8 @@
 #include "position.h"
 #include "movegeneration.h"
 
-Game::Game(Board& board) :
-    mBoard(board)
+Game::Game(PiecesModel& piecesModel) :
+    mPiecesModel(piecesModel)
 {
     resetPieces();
 }
@@ -57,24 +57,7 @@ std::vector<Move> Game::getMoves(Square const& origin)
 {
     std::vector<Move> moves;
 
-    auto position = mBoard.position();
-
-    // label a pawn as available en passant if the previous move was a pawn moving 2 squares
-    if(mMoves.size() > 0)
-    {
-        auto previousMove = mMoves.back();
-
-        auto wasPawnMove =
-            previousMove.piece() == Piece::EWhitePawn ||
-            previousMove.piece() == Piece::EBlackPawn;
-
-        auto movedTwoSquares = std::abs(previousMove.origin().y() - previousMove.destination().y()) == 2;
-
-        if(wasPawnMove && movedTwoSquares)
-        {
-            position.setAvailableEnPassant(previousMove.destination());
-        }
-    }
+    auto position = getPosition();
 
     moves = MoveGeneration::getMoves(position, origin);
 
@@ -96,6 +79,41 @@ Color Game::sideToMove() const
     return (mMoves.size() % 2 == 0) ? Color::EWhite : Color::EBlack;
 }
 
+Position Game::getPosition() const
+{
+    auto position = Position{mBoardSize};
+
+    for(auto i = 0; i < position.size(); ++i)
+    {
+        for(auto j = 0; j < position.size(); ++j)
+        {
+            auto square = Square{i, j};
+            auto piece = mPiecesModel.piece(square);
+
+            position.setPiece(piece, square);
+        }
+    }
+
+    // label a pawn as available en passant if the previous move was a pawn moving 2 squares
+    if(mMoves.size() > 0)
+    {
+        auto previousMove = mMoves.back();
+
+        auto wasPawnMove =
+            previousMove.piece() == Piece::EWhitePawn ||
+            previousMove.piece() == Piece::EBlackPawn;
+
+        auto movedTwoSquares = std::abs(previousMove.origin().y() - previousMove.destination().y()) == 2;
+
+        if(wasPawnMove && movedTwoSquares)
+        {
+            position.setAvailableEnPassant(previousMove.destination());
+        }
+    }
+
+    return position;
+}
+
 void Game::doMove(Move const& move)
 {
     // remove the piece being captured if any
@@ -107,18 +125,18 @@ void Game::doMove(Move const& move)
             capturedSquare = Square{move.destination().x(), move.origin().y()};
         }
 
-        mBoard.setPiece(capturedSquare, Piece::ENone);
+        mPiecesModel.setPiece(capturedSquare, Piece::ENone);
     }
 
     // move the piece being moved
-    mBoard.movePiece(move.origin(), move.destination());
+    mPiecesModel.movePiece(move.origin(), move.destination());
 
     mMoves.push_back(move);
 }
 
 void Game::undoMove(Move const& move)
 {
-    mBoard.movePiece(move.destination(), move.origin());
+    mPiecesModel.movePiece(move.destination(), move.origin());
 
     auto captured = move.captured();
     if(captured != Piece::ENone)
@@ -131,7 +149,7 @@ void Game::undoMove(Move const& move)
             capturedPieceY = move.origin().y();
         }
 
-        mBoard.setPiece(Square{capturedPieceX, capturedPieceY}, captured);
+        mPiecesModel.setPiece(Square{capturedPieceX, capturedPieceY}, captured);
     }
 
     mMovesUndone.emplace_back(move);
@@ -139,29 +157,29 @@ void Game::undoMove(Move const& move)
 
 void Game::resetPieces()
 {
-    mBoard.clear();
+    mPiecesModel.clear();
 
-    mBoard.setPiece(Square{0, 6}, Piece::EWhitePawn);
-    mBoard.setPiece(Square{1, 6}, Piece::EWhitePawn);
-    mBoard.setPiece(Square{2, 6}, Piece::EWhitePawn);
-    mBoard.setPiece(Square{3, 6}, Piece::EWhitePawn);
-    mBoard.setPiece(Square{4, 6}, Piece::EWhitePawn);
-    mBoard.setPiece(Square{5, 6}, Piece::EWhitePawn);
-    mBoard.setPiece(Square{6, 6}, Piece::EWhitePawn);
-    mBoard.setPiece(Square{7, 6}, Piece::EWhitePawn);
+    mPiecesModel.setPiece(Square{0, 6}, Piece::EWhitePawn);
+    mPiecesModel.setPiece(Square{1, 6}, Piece::EWhitePawn);
+    mPiecesModel.setPiece(Square{2, 6}, Piece::EWhitePawn);
+    mPiecesModel.setPiece(Square{3, 6}, Piece::EWhitePawn);
+    mPiecesModel.setPiece(Square{4, 6}, Piece::EWhitePawn);
+    mPiecesModel.setPiece(Square{5, 6}, Piece::EWhitePawn);
+    mPiecesModel.setPiece(Square{6, 6}, Piece::EWhitePawn);
+    mPiecesModel.setPiece(Square{7, 6}, Piece::EWhitePawn);
 
-    mBoard.setPiece(Square{4, 7}, Piece::EWhiteKing);
+    mPiecesModel.setPiece(Square{4, 7}, Piece::EWhiteKing);
 
-    mBoard.setPiece(Square{0, 1}, Piece::EBlackPawn);
-    mBoard.setPiece(Square{1, 1}, Piece::EBlackPawn);
-    mBoard.setPiece(Square{2, 1}, Piece::EBlackPawn);
-    mBoard.setPiece(Square{3, 1}, Piece::EBlackPawn);
-    mBoard.setPiece(Square{4, 1}, Piece::EBlackPawn);
-    mBoard.setPiece(Square{5, 1}, Piece::EBlackPawn);
-    mBoard.setPiece(Square{6, 1}, Piece::EBlackPawn);
-    mBoard.setPiece(Square{7, 1}, Piece::EBlackPawn);
+    mPiecesModel.setPiece(Square{0, 1}, Piece::EBlackPawn);
+    mPiecesModel.setPiece(Square{1, 1}, Piece::EBlackPawn);
+    mPiecesModel.setPiece(Square{2, 1}, Piece::EBlackPawn);
+    mPiecesModel.setPiece(Square{3, 1}, Piece::EBlackPawn);
+    mPiecesModel.setPiece(Square{4, 1}, Piece::EBlackPawn);
+    mPiecesModel.setPiece(Square{5, 1}, Piece::EBlackPawn);
+    mPiecesModel.setPiece(Square{6, 1}, Piece::EBlackPawn);
+    mPiecesModel.setPiece(Square{7, 1}, Piece::EBlackPawn);
 
-    mBoard.setPiece(Square{4, 0}, Piece::EBlackKing);
+    mPiecesModel.setPiece(Square{4, 0}, Piece::EBlackKing);
 }
 
 
