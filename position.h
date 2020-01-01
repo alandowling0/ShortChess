@@ -2,6 +2,7 @@
 
 #include "piece.h"
 #include "square.h"
+#include "move.h"
 #include <vector>
 
 class Position
@@ -13,8 +14,11 @@ public:
     bool isValidSquare(Square const& square) const;
     void clear();
 
+    void doMove(Move const& move);
+    void undoMove(Move const& move);
+
     Piece piece(Square const& square) const;
-    void setPiece(Piece piece, Square const& square);
+    void setPiece(Square const& square, Piece piece);
 
     Color sideToMove() const;
     void setSideToMove(Color color);

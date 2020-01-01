@@ -27,10 +27,11 @@ public:
     Color sideToMove() const;
 
 private:
-    Position getPosition() const;
     void doMove(Move const& move);
     void undoMove(Move const& move);
     void resetPieces();
+    void removeIllegalMoves(std::vector<Move> & moves) const;
+    Position getPosition() const;
 
     const int mBoardSize = 8;
     PiecesModel& mPiecesModel;

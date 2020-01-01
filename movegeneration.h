@@ -8,6 +8,6 @@
 
 namespace MoveGeneration
 {
-    std::vector<Move> getMoves(Position const& position, Color sideToMove);
+    std::vector<Move> getMoves(Position const& position);
     std::vector<Move> getMoves(Position const& position, Square const& square);
 }

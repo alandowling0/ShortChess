@@ -46,6 +46,39 @@ void Position::clear()
     }
 }
 
+void Position::doMove(Move const& move)
+{
+    setPiece(move.origin(), Piece::ENone);
+    setPiece(move.destination(), move.piece());
+
+    if(move.enPassant())
+    {
+        auto capturedEnPassantSquare = Square{move.destination().x(), move.origin().y()};
+        setPiece(capturedEnPassantSquare, Piece::ENone);
+    }
+
+    mAvailableEnPassant = Square{-1, -1};
+
+    mSideToMove = (mSideToMove == Color::EWhite) ? Color::EBlack : Color::EWhite;
+}
+
+void Position::undoMove(Move const& move)
+{
+    setPiece(move.origin(), move.piece());
+
+    if(move.enPassant())
+    {
+        auto capturedEnPassantSquare = Square{move.destination().x(), move.origin().y()};
+        setPiece(capturedEnPassantSquare, move.captured());
+    }
+    else
+    {
+        setPiece(move.destination(), move.captured());
+    }
+
+    mSideToMove = (mSideToMove == Color::EWhite) ? Color::EBlack : Color::EWhite;
+}
+
 Piece Position::piece(const Square &square) const
 {
     auto piece = Piece::ENone;
@@ -65,7 +98,7 @@ Piece Position::piece(const Square &square) const
     return piece;
 }
 
-void Position::setPiece(Piece piece, const Square &square)
+void Position::setPiece(const Square &square, Piece piece)
 {
     if(isValidSquare(square))
     {

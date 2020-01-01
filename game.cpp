@@ -61,6 +61,8 @@ std::vector<Move> Game::getMoves(Square const& origin)
 
     moves = MoveGeneration::getMoves(position, origin);
 
+    removeIllegalMoves(moves);
+
     return moves;
 }
 
@@ -77,41 +79,6 @@ std::vector<Move> Game::getMovesUndone() const
 Color Game::sideToMove() const
 {
     return (mMoves.size() % 2 == 0) ? Color::EWhite : Color::EBlack;
-}
-
-Position Game::getPosition() const
-{
-    auto position = Position{mBoardSize};
-
-    for(auto i = 0; i < position.size(); ++i)
-    {
-        for(auto j = 0; j < position.size(); ++j)
-        {
-            auto square = Square{i, j};
-            auto piece = mPiecesModel.piece(square);
-
-            position.setPiece(piece, square);
-        }
-    }
-
-    // label a pawn as available en passant if the previous move was a pawn moving 2 squares
-    if(mMoves.size() > 0)
-    {
-        auto previousMove = mMoves.back();
-
-        auto wasPawnMove =
-            previousMove.piece() == Piece::EWhitePawn ||
-            previousMove.piece() == Piece::EBlackPawn;
-
-        auto movedTwoSquares = std::abs(previousMove.origin().y() - previousMove.destination().y()) == 2;
-
-        if(wasPawnMove && movedTwoSquares)
-        {
-            position.setAvailableEnPassant(previousMove.destination());
-        }
-    }
-
-    return position;
 }
 
 void Game::doMove(Move const& move)
@@ -182,5 +149,64 @@ void Game::resetPieces()
     mPiecesModel.setPiece(Square{4, 0}, Piece::EBlackKing);
 }
 
+void Game::removeIllegalMoves(std::vector<Move> & moves) const
+{
+    moves.erase(std::remove_if(moves.begin(), moves.end(), [this](auto const& move){
+        auto illegal = false;
 
+        auto position = getPosition();
 
+        position.doMove(move);
+
+        auto nextMoves = MoveGeneration::getMoves(position);
+
+        for(auto const& m : nextMoves)
+        {
+            if(m.captured() == Piece::EWhiteKing || m.captured() == Piece::EBlackKing)
+            {
+                illegal = true;
+                break;
+            }
+        }
+
+        return illegal;
+
+    }), moves.end());
+}
+
+Position Game::getPosition() const
+{
+    auto position = Position{mBoardSize};
+
+    for(auto i = 0; i < position.size(); ++i)
+    {
+        for(auto j = 0; j < position.size(); ++j)
+        {
+            auto square = Square{i, j};
+            auto piece = mPiecesModel.piece(square);
+
+            position.setPiece(square, piece);
+        }
+    }
+
+    // label a pawn as available en passant if the previous move was a pawn moving 2 squares
+    if(mMoves.size() > 0)
+    {
+        auto previousMove = mMoves.back();
+
+        auto wasPawnMove =
+            previousMove.piece() == Piece::EWhitePawn ||
+            previousMove.piece() == Piece::EBlackPawn;
+
+        auto movedTwoSquares = std::abs(previousMove.origin().y() - previousMove.destination().y()) == 2;
+
+        if(wasPawnMove && movedTwoSquares)
+        {
+            position.setAvailableEnPassant(previousMove.destination());
+        }
+    }
+
+    position.setSideToMove(sideToMove());
+
+    return position;
+}

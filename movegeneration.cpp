@@ -9,10 +9,8 @@ namespace
     void appendPawnCapture(Position const& position, Square const& origin, Square const& destination, std::vector<Move> &moves);
 }
 
-std::vector<Move> MoveGeneration::getMoves(const Position &position, Color sideToMove)
+std::vector<Move> MoveGeneration::getMoves(const Position &position)
 {
-    Q_ASSERT(sideToMove != Color::ENone);
-
     auto moves = std::vector<Move>();
 
     for(auto i = 0; i < position.size(); ++i)
@@ -23,7 +21,7 @@ std::vector<Move> MoveGeneration::getMoves(const Position &position, Color sideT
 
             auto piece = position.piece(square);
 
-            if(PieceUtils::color(piece) == sideToMove)
+            if(PieceUtils::color(piece) == position.sideToMove())
             {
                 auto pieceMoves = getMoves(position, square);
 
