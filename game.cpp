@@ -59,6 +59,7 @@ std::vector<Move> Game::getMoves(Square const& origin)
 
     auto position = mBoard.position();
 
+    // label a pawn as available en passant if the previous move was a pawn moving 2 squares
     if(mMoves.size() > 0)
     {
         auto previousMove = mMoves.back();
