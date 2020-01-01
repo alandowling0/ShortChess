@@ -5,6 +5,7 @@ namespace
 {
     std::vector<Move> getKingMoves(Position const& position, Square const& origin);
     std::vector<Move> getRookMoves(Position const& position, Square const& origin);
+    std::vector<Move> getBishopMoves(Position const& position, Square const& origin);
     std::vector<Move> getPawnMoves(Position const& position, Square const& origin);
     void appendPawnMoves(Position const& position, Square const& origin, int yDelta, std::vector<Move>& moves);
     void appendPawnCapture(Position const& position, Square const& origin, Square const& destination, std::vector<Move> &moves);
@@ -52,6 +53,10 @@ std::vector<Move> MoveGeneration::getMoves(Position const& position, Square cons
     case Piece::EWhiteRook:
     case Piece::EBlackRook:
         moves = getRookMoves(position, square);
+        break;
+    case Piece::EWhiteBishop:
+    case Piece::EBlackBishop:
+        moves = getBishopMoves(position, square);
         break;
     case Piece::EWhiteKing:
     case Piece::EBlackKing:
@@ -115,6 +120,25 @@ namespace
 
         auto movesRight = getSlidingPieceMoves(position, origin, 1, 0);
         moves.insert(moves.end(), movesRight.begin(), movesRight.end());
+
+        return moves;
+    }
+
+    std::vector<Move> getBishopMoves(Position const& position, Square const& origin)
+    {
+        std::vector<Move> moves;
+
+        auto movesUpRight = getSlidingPieceMoves(position, origin, 1, -1);
+        moves.insert(moves.end(), movesUpRight.begin(), movesUpRight.end());
+
+        auto movesUpLeft = getSlidingPieceMoves(position, origin, -1, -1);
+        moves.insert(moves.end(), movesUpLeft.begin(), movesUpLeft.end());
+
+        auto movesDownRight = getSlidingPieceMoves(position, origin, 1, 1);
+        moves.insert(moves.end(), movesDownRight.begin(), movesDownRight.end());
+
+        auto movesDownLeft = getSlidingPieceMoves(position, origin, -1, 1);
+        moves.insert(moves.end(), movesDownLeft.begin(), movesDownLeft.end());
 
         return moves;
     }

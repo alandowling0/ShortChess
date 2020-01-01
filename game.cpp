@@ -135,6 +135,8 @@ void Game::resetPieces()
     mPiecesModel.setPiece(Square{6, 6}, Piece::EWhitePawn);
     mPiecesModel.setPiece(Square{7, 6}, Piece::EWhitePawn);
 
+    mPiecesModel.setPiece(Square{2, 7}, Piece::EWhiteBishop);
+    mPiecesModel.setPiece(Square{5, 7}, Piece::EWhiteBishop);
     mPiecesModel.setPiece(Square{0, 7}, Piece::EWhiteRook);
     mPiecesModel.setPiece(Square{7, 7}, Piece::EWhiteRook);
     mPiecesModel.setPiece(Square{4, 7}, Piece::EWhiteKing);
@@ -148,6 +150,8 @@ void Game::resetPieces()
     mPiecesModel.setPiece(Square{6, 1}, Piece::EBlackPawn);
     mPiecesModel.setPiece(Square{7, 1}, Piece::EBlackPawn);
 
+    mPiecesModel.setPiece(Square{2, 0}, Piece::EBlackBishop);
+    mPiecesModel.setPiece(Square{5, 0}, Piece::EBlackBishop);
     mPiecesModel.setPiece(Square{0, 0}, Piece::EBlackRook);
     mPiecesModel.setPiece(Square{7, 0}, Piece::EBlackRook);
     mPiecesModel.setPiece(Square{4, 0}, Piece::EBlackKing);
