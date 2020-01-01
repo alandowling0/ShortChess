@@ -55,9 +55,7 @@ Window {
 
             size: 8
 
-            onSquareClicked: {
-                chessModel.selectSquare(x, y)
-            }
+            onSquareClicked: chessModel.clickSquare(x, y)
 
             Pieces {
                 id: pieces
@@ -86,8 +84,8 @@ Window {
         height: root.portrait ? 50 : parent.height
 
         onNewGameClicked: newGameConfirmationDialog.open()
-        onTakeBackMoveClicked: chessModel.undoMove()
-        onRedoMoveClicked: chessModel.redoMove()
+        onTakeBackMoveClicked: chessModel.takebackMove()
+        onRedoMoveClicked: chessModel.replayMove()
     }
 
     Drawer {

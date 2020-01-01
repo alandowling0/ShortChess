@@ -7,53 +7,19 @@ Model::Model() :
 {
 }
 
-void Model::newGame()
+void Model::clickSquare(int x, int y)
 {
-    mGame.newGame();
-    emit gameStateChanged();
+    auto squareClicked = Square{x, y};
 
-    mHighlighted.clear();
-    emit highlightedChanged();
-
-    mSelected = {-1, -1};
-    emit selectedChanged();
-}
-
-void Model::undoMove()
-{
-    mGame.undoMove();
-    emit gameStateChanged();
-
-    mHighlighted.clear();
-    emit highlightedChanged();
-
-    mSelected = {-1, -1};
-    emit selectedChanged();
-}
-
-void Model::redoMove()
-{
-    mGame.redoMove();
-    emit gameStateChanged();
-
-    mHighlighted.clear();
-    emit highlightedChanged();
-
-    mSelected = {-1, -1};
-    emit selectedChanged();
-}
-
-void Model::selectSquare(int x, int y)
-{
-    auto squareSelected = mBoard.isValidSquare(mSelected);
-
+    // check if the square being clicked is a valid destination for the currently selected piece
+    // if it is then play that move, otherwise update the currently selected piece and highlighted squares
     std::vector<Move> legalMoves;
-    if(squareSelected)
+    if(mBoard.isValidSquare(mSelected))
     {
-        legalMoves = mGame.getLegalMoves(mSelected);
+        legalMoves = mGame.getMoves(mSelected);
     }
-    auto iter = std::find_if(legalMoves.begin(), legalMoves.end(), [x, y](auto move){
-        return move.destination().x() == x && move.destination().y() == y;
+    auto iter = std::find_if(legalMoves.begin(), legalMoves.end(), [squareClicked](auto move){
+        return move.destination() == squareClicked;
     });
 
     if(iter != legalMoves.end())
@@ -68,18 +34,18 @@ void Model::selectSquare(int x, int y)
     {
         auto sideToMove = mGame.sideToMove();
 
-        if(x < mBoard.rows() && y < mBoard.columns())
+        if(mBoard.isValidSquare(squareClicked))
         {
-            auto piece = mBoard.piece(Square{x, y});
+            auto piece = mBoard.piece(squareClicked);
 
             auto selectable = (PieceUtils::isWhite(piece) && sideToMove == Color::EWhite) ||
                                 (PieceUtils::isBlack(piece) && sideToMove == Color::EBlack);
 
             if(selectable)
             {
-                mSelected = {x, y};
+                mSelected = squareClicked;
 
-                auto moves = mGame.getLegalMoves(Square(x, y));
+                auto moves = mGame.getMoves(mSelected);
 
                 mHighlighted.clear();
                 for(auto const& m : moves)
@@ -97,6 +63,42 @@ void Model::selectSquare(int x, int y)
 
     emit selectedChanged();
     emit highlightedChanged();
+}
+
+void Model::takebackMove()
+{
+    mGame.takebackMove();
+    emit gameStateChanged();
+
+    mHighlighted.clear();
+    emit highlightedChanged();
+
+    mSelected = {-1, -1};
+    emit selectedChanged();
+}
+
+void Model::replayMove()
+{
+    mGame.replayMove();
+    emit gameStateChanged();
+
+    mHighlighted.clear();
+    emit highlightedChanged();
+
+    mSelected = {-1, -1};
+    emit selectedChanged();
+}
+
+void Model::newGame()
+{
+    mGame.newGame();
+    emit gameStateChanged();
+
+    mHighlighted.clear();
+    emit highlightedChanged();
+
+    mSelected = {-1, -1};
+    emit selectedChanged();
 }
 
 QVariant Model::piecesModel() const
@@ -126,12 +128,12 @@ bool Model::newGameAvailable() const
     return mGame.getMovesPlayed().size() > 0;
 }
 
-bool Model::undoMoveAvailable() const
+bool Model::takebackMoveAvailable() const
 {
     return mGame.getMovesPlayed().size() > 0;
 }
 
-bool Model::redoMoveAvailable() const
+bool Model::replayMoveAvailable() const
 {
     return mGame.getMovesUndone().size() > 0;
 }

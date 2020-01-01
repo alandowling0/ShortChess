@@ -57,6 +57,21 @@ int Board::numOfPieces() const
     return static_cast<int>(mPieces.size());
 }
 
+Position Board::position() const
+{
+    auto position = Position(rows());
+
+    for(auto const& piece : mPieces)
+    {
+        auto type = piece.mPiece;
+        auto square = Square{piece.mX, piece.mY};
+
+        position.setPiece(type, square);
+    }
+
+    return position;
+}
+
 void Board::setPiece(Square const& square, Piece piece)
 {
     Q_ASSERT(isValidSquare(square));

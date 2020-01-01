@@ -1,5 +1,7 @@
 #pragma once
 
+#include "color.h"
+
 enum class Piece
 {
     ENone,
@@ -22,4 +24,6 @@ namespace PieceUtils
     bool isWhite(Piece piece);
 
     bool isBlack(Piece piece);
+
+    Color color(Piece piece);
 }

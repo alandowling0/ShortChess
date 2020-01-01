@@ -26,13 +26,13 @@ Item {
             Item {
                 function onClicked(){root.takeBackMoveClicked()}
                 property string image: "takebackmove.svg"
-                property bool enabled: chessModel.undoMoveAvailable
+                property bool enabled: chessModel.takebackMoveAvailable
             }
 
             Item {
                 function onClicked(){root.redoMoveClicked()}
                 property string image: "redomove.svg"
-                property bool enabled: chessModel.redoMoveAvailable
+                property bool enabled: chessModel.replayMoveAvailable
             }
 
             Item {

@@ -20,3 +20,25 @@ bool PieceUtils::isBlack(Piece piece)
             piece == Piece::EBlackKing;
 }
 
+Color PieceUtils::color(Piece piece)
+{
+    switch(piece)
+    {
+    case Piece::EWhitePawn:
+    case Piece::EWhiteKnight:
+    case Piece::EWhiteBishop:
+    case Piece::EWhiteRook:
+    case Piece::EWhiteQueen:
+    case Piece::EWhiteKing:
+        return Color::EWhite;
+    case Piece::EBlackPawn:
+    case Piece::EBlackKnight:
+    case Piece::EBlackBishop:
+    case Piece::EBlackRook:
+    case Piece::EBlackQueen:
+    case Piece::EBlackKing:
+        return Color::EBlack;
+    default:
+        return Color::ENone;
+    }
+}

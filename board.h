@@ -1,8 +1,9 @@
 #pragma once
 
-#include <QObject>
 #include "piece.h"
 #include "square.h"
+#include "position.h"
+#include <QObject>
 #include <vector>
 
 class Board : public QObject
@@ -30,6 +31,8 @@ public:
     Piece piece(Square const& square) const;
     PieceInfo pieceInfo(int index) const;
     int numOfPieces() const;
+
+    Position position() const;
 
     void setPiece(Square const& square, Piece piece);
     void movePiece(Square const& origin, Square const& destination);

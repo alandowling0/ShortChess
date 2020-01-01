@@ -16,23 +16,23 @@ class Model : public QObject
     Q_PROPERTY(QVariantMap selected READ selected NOTIFY selectedChanged)
     Q_PROPERTY(QVariantList highlighted READ highlighted NOTIFY highlightedChanged)
     Q_PROPERTY(bool newGameAvailable READ newGameAvailable NOTIFY gameStateChanged)
-    Q_PROPERTY(bool undoMoveAvailable READ undoMoveAvailable NOTIFY gameStateChanged)
-    Q_PROPERTY(bool redoMoveAvailable READ redoMoveAvailable NOTIFY gameStateChanged)
+    Q_PROPERTY(bool takebackMoveAvailable READ takebackMoveAvailable NOTIFY gameStateChanged)
+    Q_PROPERTY(bool replayMoveAvailable READ replayMoveAvailable NOTIFY gameStateChanged)
 
 public:
     Model();
 
+    Q_INVOKABLE void clickSquare(int x, int y);
+    Q_INVOKABLE void takebackMove();
+    Q_INVOKABLE void replayMove();
     Q_INVOKABLE void newGame();
-    Q_INVOKABLE void undoMove();
-    Q_INVOKABLE void redoMove();
-    Q_INVOKABLE void selectSquare(int x, int y);
 
     QVariant piecesModel() const;
     QVariantMap selected() const;
     QVariantList highlighted() const;
     bool newGameAvailable() const;
-    bool undoMoveAvailable() const;
-    bool redoMoveAvailable() const;
+    bool takebackMoveAvailable() const;
+    bool replayMoveAvailable() const;
 
 signals:
     void selectedChanged();

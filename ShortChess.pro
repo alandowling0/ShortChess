@@ -17,10 +17,12 @@ SOURCES += \
     board.cpp \
         main.cpp \
     move.cpp \
+    movegeneration.cpp \
     piecesmodel.cpp \
     game.cpp \
     model.cpp \
     piece.cpp \
+    position.cpp \
     square.cpp
 
 RESOURCES += qml.qrc
@@ -39,11 +41,13 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     board.h \
     move.h \
+    movegeneration.h \
     piecesmodel.h \
     game.h \
     model.h \
     piece.h \
     color.h \
+    position.h \
     square.h
 
 DISTFILES += \

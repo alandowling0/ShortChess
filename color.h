@@ -2,6 +2,7 @@
 
 enum class Color
 {
+    ENone,
     EWhite,
     EBlack
 };
