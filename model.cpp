@@ -32,7 +32,7 @@ void Model::clickSquare(int x, int y)
     }
     else
     {
-        auto sideToMove = mGame.sideToMove();
+        auto sideToMove = mGame.getSideToMove();
 
         auto piece = mPiecesModel->piece(squareClicked);
 

@@ -55,15 +55,11 @@ void Game::newGame()
 
 std::vector<Move> Game::getMoves(Square const& origin)
 {
-    std::vector<Move> moves;
-
     auto position = getPosition();
 
-    moves = MoveGeneration::getMoves(position, origin);
+    auto moves = MoveGeneration::getMoves(position, origin);
 
-    removeIllegalMoves(moves);
-
-    return moves;
+    return MoveGeneration::removeMovesAllowingCheck(position, moves);
 }
 
 std::vector<Move> Game::getMovesPlayed() const
@@ -76,7 +72,7 @@ std::vector<Move> Game::getMovesUndone() const
     return mMovesUndone;
 }
 
-Color Game::sideToMove() const
+Color Game::getSideToMove() const
 {
     return (mMoves.size() % 2 == 0) ? Color::EWhite : Color::EBlack;
 }
@@ -135,13 +131,13 @@ void Game::resetPieces()
     mPiecesModel.setPiece(Square{6, 6}, Piece::EWhitePawn);
     mPiecesModel.setPiece(Square{7, 6}, Piece::EWhitePawn);
 
-    mPiecesModel.setPiece(Square{1, 7}, Piece::EWhiteKnight);
-    mPiecesModel.setPiece(Square{6, 7}, Piece::EWhiteKnight);
-    mPiecesModel.setPiece(Square{2, 7}, Piece::EWhiteBishop);
-    mPiecesModel.setPiece(Square{5, 7}, Piece::EWhiteBishop);
+//    mPiecesModel.setPiece(Square{1, 7}, Piece::EWhiteKnight);
+//    mPiecesModel.setPiece(Square{6, 7}, Piece::EWhiteKnight);
+//    mPiecesModel.setPiece(Square{2, 7}, Piece::EWhiteBishop);
+//    mPiecesModel.setPiece(Square{5, 7}, Piece::EWhiteBishop);
     mPiecesModel.setPiece(Square{0, 7}, Piece::EWhiteRook);
     mPiecesModel.setPiece(Square{7, 7}, Piece::EWhiteRook);
-    mPiecesModel.setPiece(Square{3, 7}, Piece::EWhiteQueen);
+//    mPiecesModel.setPiece(Square{3, 7}, Piece::EWhiteQueen);
     mPiecesModel.setPiece(Square{4, 7}, Piece::EWhiteKing);
 
     mPiecesModel.setPiece(Square{0, 1}, Piece::EBlackPawn);
@@ -163,45 +159,41 @@ void Game::resetPieces()
     mPiecesModel.setPiece(Square{4, 0}, Piece::EBlackKing);
 }
 
-void Game::removeIllegalMoves(std::vector<Move> & moves) const
-{
-    moves.erase(std::remove_if(moves.begin(), moves.end(), [this](auto const& move){
-        auto illegal = false;
-
-        auto position = getPosition();
-
-        position.doMove(move);
-
-        auto nextMoves = MoveGeneration::getMoves(position);
-
-        for(auto const& m : nextMoves)
-        {
-            if(m.captured() == Piece::EWhiteKing || m.captured() == Piece::EBlackKing)
-            {
-                illegal = true;
-                break;
-            }
-        }
-
-        return illegal;
-
-    }), moves.end());
-}
-
 Position Game::getPosition() const
 {
-    auto position = Position{mBoardSize};
+    return {getBoard(), getSideToMove(), getCastlingStatus(), getEnPassantAvailable()};
+}
 
-    for(auto i = 0; i < position.size(); ++i)
+Board Game::getBoard() const
+{
+    auto board = Board{mBoardSize};
+
+    for(auto i = 0; i < board.size(); ++i)
     {
-        for(auto j = 0; j < position.size(); ++j)
+        for(auto j = 0; j < board.size(); ++j)
         {
             auto square = Square{i, j};
             auto piece = mPiecesModel.piece(square);
 
-            position.setPiece(square, piece);
+            board.setPiece(square, piece);
         }
     }
+
+    return board;
+}
+
+CastlingStatus Game::getCastlingStatus() const
+{
+    auto castlingStatus = CastlingStatus{};
+
+    //look through move history to decide castling rights
+
+    return castlingStatus;
+}
+
+Square Game::getEnPassantAvailable() const
+{
+    auto square = Square{-1, -1};
 
     // label a pawn as available en passant if the previous move was a pawn moving 2 squares
     if(mMoves.size() > 0)
@@ -216,11 +208,9 @@ Position Game::getPosition() const
 
         if(wasPawnMove && movedTwoSquares)
         {
-            position.setAvailableEnPassant(previousMove.destination());
+            square = previousMove.destination();
         }
     }
 
-    position.setSideToMove(sideToMove());
-
-    return position;
+    return square;
 }

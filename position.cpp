@@ -1,116 +1,21 @@
 #include "position.h"
 
 
-Position::Position(int size) :
-    mSideToMove(Color::EWhite),
-    mAvailableEnPassant({-1, -1}),
-    mWhiteKingMoved(false),
-    mWhiteKingsideRookMoved(false),
-    mWhiteQueensideRookMoved(false),
-    mBlackKingMoved(false),
-    mBlackKingsideRookMoved(false),
-    mBlackQueensideRookMoved(false)
+Position::Position(Board const& board,
+                   Color sideToMove,
+                   CastlingStatus const& castlingStatus,
+                   Square const& availableEnPassant) :
+    mBoard(board),
+    mSideToMove(sideToMove),
+    mCastlingStatus(castlingStatus),
+    mAvailableEnPassant(availableEnPassant)
 {
-    for(auto i = 0; i < size; ++i)
-    {
-        mPieces.emplace_back();
-
-        for(auto j = 0; j < size; ++j)
-        {
-            mPieces.back().emplace_back(Piece::ENone);
-        }
-    }
 }
 
-int Position::size() const
+
+Board Position::board() const
 {
-    return static_cast<int>(mPieces.size());
-}
-
-bool Position::isValidSquare(const Square &square) const
-{
-    auto xValid = (square.x() >= 0) && (square.x() < size());
-    auto yValid = (square.y() >= 0) && (square.y() < size());
-
-    return xValid && yValid;
-}
-
-void Position::clear()
-{
-    for(auto & column : mPieces)
-    {
-        for(auto & piece : column)
-        {
-            piece = Piece::ENone;
-        }
-    }
-}
-
-void Position::doMove(Move const& move)
-{
-    setPiece(move.origin(), Piece::ENone);
-    setPiece(move.destination(), move.piece());
-
-    if(move.enPassant())
-    {
-        auto capturedEnPassantSquare = Square{move.destination().x(), move.origin().y()};
-        setPiece(capturedEnPassantSquare, Piece::ENone);
-    }
-
-    mAvailableEnPassant = Square{-1, -1};
-
-    mSideToMove = (mSideToMove == Color::EWhite) ? Color::EBlack : Color::EWhite;
-}
-
-void Position::undoMove(Move const& move)
-{
-    setPiece(move.origin(), move.piece());
-
-    if(move.enPassant())
-    {
-        auto capturedEnPassantSquare = Square{move.destination().x(), move.origin().y()};
-        setPiece(capturedEnPassantSquare, move.captured());
-    }
-    else
-    {
-        setPiece(move.destination(), move.captured());
-    }
-
-    mSideToMove = (mSideToMove == Color::EWhite) ? Color::EBlack : Color::EWhite;
-}
-
-Piece Position::piece(const Square &square) const
-{
-    auto piece = Piece::ENone;
-
-    if(isValidSquare(square))
-    {
-        auto x = static_cast<size_t>(square.x());
-        auto y = static_cast<size_t>(square.y());
-
-        piece = mPieces[x][y];
-    }
-    else
-    {
-        Q_ASSERT(false);
-    }
-
-    return piece;
-}
-
-void Position::setPiece(const Square &square, Piece piece)
-{
-    if(isValidSquare(square))
-    {
-        auto x = static_cast<size_t>(square.x());
-        auto y = static_cast<size_t>(square.y());
-
-        mPieces[x][y] = piece;
-    }
-    else
-    {
-        Q_ASSERT(false);
-    }
+    return mBoard;
 }
 
 Color Position::sideToMove() const
@@ -118,9 +23,9 @@ Color Position::sideToMove() const
     return mSideToMove;
 }
 
-void Position::setSideToMove(Color color)
+CastlingStatus Position::castlingStatus() const
 {
-    mSideToMove = color;
+    return mCastlingStatus;
 }
 
 Square Position::availableEnPassant() const
@@ -128,69 +33,5 @@ Square Position::availableEnPassant() const
     return mAvailableEnPassant;
 }
 
-void Position::setAvailableEnPassant(Square const& availableEnPassant)
-{
-    mAvailableEnPassant = availableEnPassant;
-}
-
-bool Position::whiteKingMoved() const
-{
-    return mWhiteKingMoved;
-}
-
-void Position::setWhiteKingMoved(bool whiteKingMoved)
-{
-    mWhiteKingMoved = whiteKingMoved;
-}
-
-bool Position::whiteKingsideRookMoved() const
-{
-    return mWhiteKingsideRookMoved;
-}
-
-void Position::setWhiteKingsideRookMoved(bool whiteKingsideRookMoved)
-{
-    mWhiteKingsideRookMoved = whiteKingsideRookMoved;
-}
-
-bool Position::whiteQueensideRookMoved() const
-{
-    return mWhiteQueensideRookMoved;
-}
-
-void Position::setWhiteQueensideRookMoved(bool whiteQueensideRookMoved)
-{
-    mWhiteQueensideRookMoved = whiteQueensideRookMoved;
-}
-
-bool Position::blackKingMoved() const
-{
-    return mBlackKingMoved;
-}
-
-void Position::setBlackKingMoved(bool blackKingMoved)
-{
-    mBlackKingMoved = blackKingMoved;
-}
-
-bool Position::blackKingsideRookMoved() const
-{
-    return mBlackKingsideRookMoved;
-}
-
-void Position::setBlackKingsideRookMoved(bool blackKingsideRookMoved)
-{
-    mBlackKingsideRookMoved = blackKingsideRookMoved;
-}
-
-bool Position::blackQueensideRookMoved() const
-{
-    return mBlackQueensideRookMoved;
-}
-
-void Position::setBlackQueensideRookMoved(bool blackQueensideRookMoved)
-{
-    mBlackQueensideRookMoved = blackQueensideRookMoved;
-}
 
 

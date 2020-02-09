@@ -5,6 +5,7 @@
 #include "move.h"
 #include "position.h"
 #include "piecesmodel.h"
+#include "castlingstatus.h"
 #include <QObject>
 #include <vector>
 
@@ -22,16 +23,20 @@ public:
     std::vector<Move> getMoves(Square const& origin);
     std::vector<Move> getMovesPlayed() const;
     std::vector<Move> getMovesUndone() const;
-    Color sideToMove() const;
+    Color getSideToMove() const;
 
 private:
     void doMove(Move const& move);
     void undoMove(Move const& move);
     void resetPieces();
-    void removeIllegalMoves(std::vector<Move> & moves) const;
+
     Position getPosition() const;
+    Board getBoard() const;
+    CastlingStatus getCastlingStatus() const;
+    Square getEnPassantAvailable() const;
 
     const int mBoardSize = 8;
+
     PiecesModel& mPiecesModel;
     std::vector<Move> mMoves;
     std::vector<Move> mMovesUndone;

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "board.h"
 #include <QHash>
 
 class Square
@@ -9,6 +10,8 @@ public:
 
     int x() const;
     int y() const;
+
+    bool isValid(Board const& board) const;
 
 private:
     int mX;

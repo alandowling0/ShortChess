@@ -3,60 +3,27 @@
 #include "piece.h"
 #include "square.h"
 #include "move.h"
+#include "board.h"
+#include "castlingstatus.h"
 #include <vector>
 
 class Position
 {
 public:
-    Position(int size);
+    Position(Board const& board,
+             Color sideToMove,
+             CastlingStatus const& castlingStatus,
+             Square const& availableEnPassant);
 
-    int size() const;
-    bool isValidSquare(Square const& square) const;
-    void clear();
-
-    void doMove(Move const& move);
-    void undoMove(Move const& move);
-
-    Piece piece(Square const& square) const;
-    void setPiece(Square const& square, Piece piece);
-
+    Board board() const;
     Color sideToMove() const;
-    void setSideToMove(Color color);
-
+    CastlingStatus castlingStatus() const;
     Square availableEnPassant() const;
-    void setAvailableEnPassant(Square const& availableEnPassant);
-
-    bool whiteKingMoved() const;
-    void setWhiteKingMoved(bool whiteKingMoved);
-
-    bool whiteKingsideRookMoved() const;
-    void setWhiteKingsideRookMoved(bool whiteKingsideRookMoved);
-
-    bool whiteQueensideRookMoved() const;
-    void setWhiteQueensideRookMoved(bool whiteQueensideRookMoved);
-
-    bool blackKingMoved() const;
-    void setBlackKingMoved(bool blackKingMoved);
-
-    bool blackKingsideRookMoved() const;
-    void setBlackKingsideRookMoved(bool blackKingsideRookMoved);
-
-    bool blackQueensideRookMoved() const;
-    void setBlackQueensideRookMoved(bool blackQueensideRookMoved);
 
 private:
-    std::vector<std::vector<Piece>> mPieces;
-
+    Board mBoard;
     Color mSideToMove;
-
+    CastlingStatus mCastlingStatus;
     Square mAvailableEnPassant;
-
-    bool mWhiteKingMoved;
-    bool mWhiteKingsideRookMoved;
-    bool mWhiteQueensideRookMoved;
-
-    bool mBlackKingMoved;
-    bool mBlackKingsideRookMoved;
-    bool mBlackQueensideRookMoved;
 };
 

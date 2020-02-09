@@ -9,5 +9,6 @@
 namespace MoveGeneration
 {
     std::vector<Move> getMoves(Position const& position);
-    std::vector<Move> getMoves(Position const& position, Square const& square);
+    std::vector<Move> getMoves(Position const& position, Square const& origin);
+    std::vector<Move> removeMovesAllowingCheck(Position const& position, std::vector<Move> const& moves);
 }
